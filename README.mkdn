@@ -1,0 +1,38 @@
+Fractal Image Compression
+=========================
+Fractal compression is a lossy image compression method using fractals. The
+method is best suited for textures and natural images, relying on the fact that
+parts of an image often resemble other parts of the same image.
+Fractal algorithms convert these parts into mathematical data called "fractal
+codes" which are used to recreate the encoded image. Fractal compression differs
+from pixel-based compression schemes such as JPEG, GIF and MPEG since no pixels
+are saved. Once an image has been converted into fractal code, the image can be
+recreated to fill any screen size without the loss of sharpness that occurs in
+conventional compression schemes.
+
+Analysis
+--------
+
+### Image Analysis
+- read image
+- uncompress, strip headers, keep raw
+
+### Block Analysis
+- split into NxM blocks
+- compare blocks and discover similarities
+  * similarity depends on the *quality* factor
+
+### Fractal Analysis
+- similar blocks construct a pattern space
+- produce a fractal function from the pattern space
+
+
+Optimizations
+-------------
+
+-   negate image  
+    limit color space and color diffs
+-   monochrome image  
+    store color information separately  
+    similarity doesn't care about color
+
