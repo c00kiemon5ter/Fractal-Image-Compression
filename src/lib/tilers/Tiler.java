@@ -7,5 +7,11 @@ import java.awt.image.BufferedImage;
  */
 public interface Tiler {
 
+	/**
+	 * Tile the given image according to the chosen tiler
+	 * 
+	 * @param image the image to tile or split
+	 * @return an array holding the split images
+	 */
 	public BufferedImage[] tile(BufferedImage image);
 }

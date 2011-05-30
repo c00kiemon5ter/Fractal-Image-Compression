@@ -3,45 +3,59 @@ package lib.tilers;
 import java.awt.image.BufferedImage;
 
 /**
- *
- * @author Periklis Ntanasis
+ * Rectangle tiler. Given the rows and columns, it
+ * splits the image into rows x columns rectangles. 
  */
 public class RectangularTiler implements Tiler {
 
-	private int blockwidth = 0, blockheight = 0;
-	private int blocksmultitude = 0, blockscol = 0, blocksraw = 0;
+	private int rows = 0, cols = 0;
 
-	public RectangularTiler(int x, int y) {
-		blockwidth = x;
-		blockheight = y;
+	/**
+	 * 
+	 * @param rows the rows to tile the image
+	 * @param cols the columns to tile the image
+	 */
+	public RectangularTiler(int rows, int cols) {
+		this.rows = rows;
+		this.cols = cols;
 	}
 
 	@Override
 	public BufferedImage[] tile(BufferedImage image) {
-
-		if (blockscol == 0 && blocksraw == 0
-			&& blockwidth % image.getWidth() == 0
-			&& blockheight % image.getHeight() == 0) {
-			blockscol = image.getWidth() / blockwidth;
-			blocksraw = image.getHeight() / blockheight;
-			blocksmultitude = image.getWidth() / blockwidth * image.getHeight() / blockheight;
-		} else if (blocksraw != 0 && blockscol != 0) {
-			blockwidth = image.getWidth() / blockscol;
-			blockheight = image.getHeight() / blocksraw;
-			blocksmultitude = blocksraw * blockscol;
-			System.out.println(image.getWidth() + " " + image.getHeight());
-		}
-
-		System.out.println(blockwidth + " " + blockheight);
-
-		BufferedImage[] blocks = new BufferedImage[blocksmultitude];
-		int count = 0;
-		for (int x = 0; x < blocksraw && (x + 1) * blockheight < image.getHeight(); x++) {
-			for (int y = 0; y < blockscol && ((y + 1) * blockwidth < image.getWidth()); y++) {
-				blocks[count++] = image.getSubimage(x * blockheight, y * blockwidth, blockwidth, blockheight);
+		image = adjustImageSizeDown(image, rows, cols);
+		int blockheight = image.getHeight() / rows;
+		int blockwidth = image.getWidth() / cols;
+		BufferedImage[] blocks = new BufferedImage[rows * cols];
+		for (int y = 0; y < rows; y++) {
+			for (int x = 0; x < cols; x++) {
+				blocks[y * cols + x] = image.getSubimage(x * blockwidth,
+														 y * blockheight,
+														 blockwidth,
+														 blockheight);
 			}
 		}
-
 		return blocks;
+	}
+
+	/**
+	 * Adjust image size such that it can be split by
+	 * the given rows and columns.
+	 * Adjust takes place by reducing the image size. 
+	 * 
+	 * @param image the image to split and fit in rows and columns
+	 * @param rows the rows to split the image
+	 * @param cols the columns to split the image
+	 * @return the adjusted image, the image with the correct size
+	 */
+	private BufferedImage adjustImageSizeDown(BufferedImage image, int rows, int cols) {
+		int width = image.getWidth();
+		while (width % cols != 0) {
+			width--;
+		}
+		int height = image.getHeight();
+		while (height % rows != 0) {
+			height--;
+		}
+		return image.getSubimage(0, 0, width, height);
 	}
 }
