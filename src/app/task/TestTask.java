@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
+import lib.tilers.RectangularTiler;
+import lib.tilers.Tiler;
 
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
@@ -37,8 +39,9 @@ public class TestTask extends Task {
 
 	@Override
 	public void run() {
-		testBuffImage();
+		//testBuffImage();
 		testIm4java();
+		testRectTiler();
 	}
 
 	/**
@@ -123,5 +126,13 @@ public class TestTask extends Task {
 		} catch (InterruptedException ex) {
 		} catch (IM4JavaException ex) {
 		}
+	}
+
+	/**
+	 * Test the rectangular tiler
+	 */
+	private void testRectTiler() {
+		Tiler tiler = new RectangularTiler(15, 15);
+		BufferedImage[] blocks = tiler.tile(image);
 	}
 }
