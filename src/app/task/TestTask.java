@@ -2,14 +2,16 @@ package app.task;
 
 import app.Err;
 import app.Opts;
-import java.awt.image.BufferedImage;
+
+import lib.tilers.RectangularTiler;
+import lib.tilers.Tiler;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import lib.tilers.RectangularTiler;
-import lib.tilers.Tiler;
 
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
@@ -39,25 +41,17 @@ public class TestTask extends Task {
 
 	@Override
 	public void run() {
-		//testBuffImage();
-		testIm4java();
+		//testSplitImage();
+		//testIm4javaResize();
+		//testIm4javaConvertDiff();
+		testIm4javaCompare();
 		testRectTiler();
 	}
 
 	/**
-	 * Play with some buffered images
+	 * Split an image to blocks
 	 */
-	public void testBuffImage() {
-
-		// crop part of image
-		int sx = 0, sy = 0, sw = 128, sh = 128;
-		BufferedImage res = image.getSubimage(sx, sy, sw, sh);
-		try {
-			ImageIO.write(res, "PNG", output);
-		} catch (IOException ex) {
-		}
-
-		// split image to blocks
+	public void testSplitImage() {
 		int rows = 4;
 		int cols = 4;
 		int blockwidth = image.getWidth() / cols;
@@ -67,9 +61,30 @@ public class TestTask extends Task {
 			for (int y = 0; y < cols; y++) {
 				blocks[x][y] = image.getSubimage(x * blockheight, y * blockwidth, blockwidth, blockheight);
 				try {
-					ImageIO.write(blocks[x][y], "PNG", new File(String.format("%s/block_%d%d_%d%d.png", output.getParent(), rows, cols, x, y)));
+					ImageIO.write(blocks[x][y], "PNG",
+								  new File(String.format("%s/block_%d%d_%d%d.png",
+														 output.getParent(),
+														 rows, cols, x, y)));
 				} catch (IOException ex) {
+					System.err.printf("Couldn't write image: %d%d\n", x, y);
 				}
+			}
+		}
+	}
+
+	/**
+	 * Test the rectangular tiler.
+	 * Write the tiled blocks.
+	 */
+	private void testRectTiler() {
+		Tiler tiler = new RectangularTiler(5, 5);
+		BufferedImage[] blocks = tiler.tile(image);
+		System.out.println(blocks.length);
+		for (int i = 0; i < blocks.length; i++) {
+			try {
+				ImageIO.write(blocks[i], "PNG", new File(String.format("%s/tile_block_%d.png", output.getParent(), i)));
+			} catch (IOException ex) {
+				System.err.printf("Couldn't write image: %d\n", i);
 			}
 		}
 	}
@@ -80,7 +95,10 @@ public class TestTask extends Task {
 	 * evaluate im4java lib *
 	 * TODO: Pipe + BuffImg *
 	 * **********************/
-	private void testIm4java() {
+	/**
+	 * Resize to half input image and store to output
+	 */
+	private void testIm4javaResize() {
 		ImageCommand cmd = new ConvertCmd();
 		IMOperation op = new IMOperation();
 		op.resize(image.getHeight() / 2, image.getWidth() / 2);
@@ -89,50 +107,68 @@ public class TestTask extends Task {
 		try {
 			cmd.run(op);
 		} catch (IOException ex) {
+			System.err.printf("Couldn't run op: resize ioe");
 		} catch (InterruptedException ex) {
+			System.err.printf("Couldn't run op: resize ie");
 		} catch (IM4JavaException ex) {
-		}
-
-		/* search for similarity -- one of billions of ways..
-		 *
-		 * cli equivalent:
-		 * $ convert img1.png img2.png -compose difference \
-		 *	-composite -separate -background black -compose plus \
-		 *	-flatten diff.png
-		 *
-		 * TODO: 
-		 * $ compare -metric NCC -fuzz 5% img1.jpg img2.jpg diff.jpg
-		 * 
-		 * TODO: capture stdout and stderr and pipe buffered images
-		 * diff.metric("NCC");		// FIXME: make this work
-		 */
-		IMOperation diff = new IMOperation();
-		diff.addImage(output.getParent() + "/block_44_11.png");
-		diff.addImage(output.getParent() + "/output.png");
-		diff.compose("difference");
-		diff.composite();
-		diff.separate();
-		diff.background("black");
-		diff.compose("plus");
-		diff.flatten();
-		diff.addImage(output.getParent() + "/diff_00_01.png");
-		try {
-			ArrayListOutputConsumer oc = new ArrayListOutputConsumer();
-			cmd.setOutputConsumer(oc);
-			cmd.run(diff);
-			System.out.println("OC :: " + oc.getOutput());
-			System.out.println("EC :: " + cmd.getErrorText().toString());
-		} catch (IOException ex) {
-		} catch (InterruptedException ex) {
-		} catch (IM4JavaException ex) {
+			System.err.printf("Couldn't run op: resize im4jve");
 		}
 	}
 
 	/**
-	 * Test the rectangular tiler
+	 * search for similarity -- one of billions of ways.
+	 *
+	 * cli equivalent:
+	 * $ convert img1.png img2.png -compose difference \
+	 *	-composite -separate -background black -compose plus \
+	 *	-flatten diff.png
+	 *
 	 */
-	private void testRectTiler() {
-		Tiler tiler = new RectangularTiler(15, 15);
-		BufferedImage[] blocks = tiler.tile(image);
+	private void testIm4javaConvertDiff() {
+		ImageCommand cmd = new ConvertCmd();
+		IMOperation op = new IMOperation();
+		op.addImage(output.getParent() + "/block_44_11.png");
+		op.addImage(output.getParent() + "/output.png");
+		op.compose("difference");
+		op.composite();
+		op.separate();
+		op.background("black");
+		op.compose("plus");
+		op.flatten();
+		op.addImage(output.getParent() + "/diff_00_01.png");
+		try {
+			ArrayListOutputConsumer oc = new ArrayListOutputConsumer();
+			cmd.setOutputConsumer(oc);
+			cmd.run(op);
+			System.out.println("OC :: " + oc.getOutput());
+			System.out.println("EC :: " + cmd.getErrorText().toString());
+		} catch (IOException ex) {
+			System.err.printf("Couldn't run op: convert ioe");
+		} catch (InterruptedException ex) {
+			System.err.printf("Couldn't run op: convert ie");
+		} catch (IM4JavaException ex) {
+			System.err.printf("Couldn't run op: convert im4jve");
+		}
+	}
+
+	/**
+	 * TODO: im4java compare + NCC metric + streams
+	 * 
+	 * cli equivalent:
+	 * $ compare -metric NCC -fuzz 5% in1.jpg in2.jpg diff.jpg
+	 */
+	private void testIm4javaCompare() {
+		ImageCommand cmd = new ConvertCmd();
+		IMOperation op = new IMOperation();
+		op.metric("NCC");
+		try {
+			cmd.run(op);
+		} catch (IOException ex) {
+			System.err.printf("Couldn't run op: compare ioe");
+		} catch (InterruptedException ex) {
+			System.err.printf("Couldn't run op: compare ie");
+		} catch (IM4JavaException ex) {
+			System.err.printf("Couldn't run op: compare im4jve");
+		}
 	}
 }
