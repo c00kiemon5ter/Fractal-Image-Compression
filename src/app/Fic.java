@@ -138,10 +138,10 @@ public class Fic {
 	 * Build and display a usage message
 	 */
 	private static void usage() {
-		String headerformat = "usage: java -jar %s <command> [options] input <input-file>\n";
+		String headerformat = "usage: java -jar %s.jar <command> [options] %s <input-file>\n";
 		String propformat = "\t\t%s\t%s\n";
 		StringBuilder helpmsg = new StringBuilder();
-		helpmsg.append(String.format(headerformat, Fic.class.getSimpleName()));
+		helpmsg.append(String.format(headerformat, Fic.class.getSimpleName(), Opts.INPUT.option()));
 		helpmsg.append("\n\tCommands:\n");
 		for (Cmds cmd : Cmds.values()) {
 			helpmsg.append(String.format(propformat, cmd.option(), cmd.description()));

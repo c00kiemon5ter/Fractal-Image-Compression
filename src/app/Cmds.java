@@ -29,6 +29,6 @@ public enum Cmds {
 	 * @return the option representing the command
 	 */
 	public String option() {
-		return this.name().toLowerCase();
+		return '-' + this.name().toLowerCase();
 	}
 }

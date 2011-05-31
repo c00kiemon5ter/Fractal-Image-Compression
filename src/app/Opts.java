@@ -32,6 +32,6 @@ public enum Opts {
 	 * @return the option represented
 	 */
 	public String option() {
-		return this.name().toLowerCase();
+		return '-' + this.name().toLowerCase();
 	}
 }
