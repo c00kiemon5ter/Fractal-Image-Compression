@@ -12,6 +12,7 @@ import java.util.Properties;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import lib.tilers.AdaptiveRectangularTiler;
 
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
@@ -44,8 +45,9 @@ public class TestTask extends Task {
 		//testSplitImage();
 		//testIm4javaResize();
 		//testIm4javaConvertDiff();
-		testIm4javaCompare();
-		testRectTiler();
+		//testIm4javaCompare();
+		//testRectTiler();
+		testAdaptRectTiler();
 	}
 
 	/**
@@ -78,6 +80,23 @@ public class TestTask extends Task {
 	 */
 	private void testRectTiler() {
 		Tiler tiler = new RectangularTiler(5, 5);
+		BufferedImage[] blocks = tiler.tile(image);
+		System.out.println(blocks.length);
+		for (int i = 0; i < blocks.length; i++) {
+			try {
+				ImageIO.write(blocks[i], "PNG", new File(String.format("%s/tile_block_%d.png", output.getParent(), i)));
+			} catch (IOException ex) {
+				System.err.printf("Couldn't write image: %d\n", i);
+			}
+		}
+	}
+
+	/**
+	 * Test the adaptive rectangular tiler.
+	 * Write the tiled blocks.
+	 */
+	private void testAdaptRectTiler() {
+		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
 		BufferedImage[] blocks = tiler.tile(image);
 		System.out.println(blocks.length);
 		for (int i = 0; i < blocks.length; i++) {
