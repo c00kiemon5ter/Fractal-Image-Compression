@@ -1,5 +1,6 @@
 package lib.tilers;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 /**
@@ -9,9 +10,49 @@ import java.awt.image.BufferedImage;
  */
 public class AdaptiveRectangularTiler implements Tiler {
 
+	private int rows, cols;
+
+	/**
+	 * Given the rows and columns tile the image. Rows and columns
+	 * will always be equal or more than the initial numbers given.
+	 * @param initialRows the initial number of rows
+	 * @param initialCols the initial number of columns
+	 */
+	public AdaptiveRectangularTiler(int initialRows, int initialCols) {
+		this.rows = initialRows;
+		this.cols = initialCols;
+	}
+
 	@Override
 	public BufferedImage[] tile(BufferedImage image) {
-		// TODO: algorithm to determine num of rows and columns
-		throw new UnsupportedOperationException("Not supported yet.");
+		Point coord = adjustColsRows(image, rows, cols);
+		this.rows = coord.x;
+		this.cols = coord.y;
+		int blockheight = image.getHeight() / rows;
+		int blockwidth = image.getWidth() / cols;
+		BufferedImage[] blocks = new BufferedImage[rows * cols];
+		for (int y = 0; y < rows; y++) {
+			for (int x = 0; x < cols; x++) {
+				blocks[y * cols + x] = image.getSubimage(x * blockwidth,
+														 y * blockheight,
+														 blockwidth,
+														 blockheight);
+			}
+		}
+		return blocks;
+	}
+
+	/**
+	 * Adjust the number of columns and rows to split the image
+	 * so that it accurately fits in the rectangles. 
+	 */
+	private Point adjustColsRows(BufferedImage image, int rows, int cols) {
+		while (image.getHeight() % rows != 0) {
+			rows++;
+		}
+		while (image.getWidth() % cols != 0) {
+			cols++;
+		}
+		return new Point(rows, cols);
 	}
 }
