@@ -2,4 +2,7 @@
 
 src/lib/Comparison.java
 
-Compares 2 images... in progress
+Can't parse the comparison results...
+
+im4java's OutputConsumer displays only the last
+line...
