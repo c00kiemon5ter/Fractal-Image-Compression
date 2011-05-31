@@ -107,11 +107,11 @@ public class TestTask extends Task {
 		try {
 			cmd.run(op);
 		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: resize ioe");
+			System.err.printf("Couldn't run op: resize ioe\n");
 		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: resize ie");
+			System.err.printf("Couldn't run op: resize ie\n");
 		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: resize im4jve");
+			System.err.printf("Couldn't run op: resize im4jve\n");
 		}
 	}
 
@@ -143,11 +143,11 @@ public class TestTask extends Task {
 			System.out.println("OC :: " + oc.getOutput());
 			System.out.println("EC :: " + cmd.getErrorText().toString());
 		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: convert ioe");
+			System.err.printf("Couldn't run op: convert ioe\n");
 		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: convert ie");
+			System.err.printf("Couldn't run op: convert ie\n");
 		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: convert im4jve");
+			System.err.printf("Couldn't run op: convert im4jve\n");
 		}
 	}
 
@@ -164,11 +164,11 @@ public class TestTask extends Task {
 		try {
 			cmd.run(op);
 		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: compare ioe");
+			System.err.printf("Couldn't run op: compare ioe\n");
 		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: compare ie");
+			System.err.printf("Couldn't run op: compare ie\n");
 		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: compare im4jve");
+			System.err.printf("Couldn't run op: compare im4jve\n");
 		}
 	}
 }

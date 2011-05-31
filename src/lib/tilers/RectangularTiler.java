@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
  */
 public class RectangularTiler implements Tiler {
 
-	private int rows = 0, cols = 0;
+	private int rows, cols;
 
 	/**
 	 * 
