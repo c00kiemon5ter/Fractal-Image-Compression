@@ -39,7 +39,6 @@ public class Comparison {
                     return false;
             }
         }
-    ;
     }
     private IMOperation operation;
     private ArrayListOutputConsumer stdout;
