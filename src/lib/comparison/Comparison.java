@@ -23,6 +23,9 @@ public class Comparison {
 	private IMOperation operation;
 	private ArrayListOutputConsumer stdout;
 	private static ImageCommand command = new ImageMagickCmd("compare");
+        private Metric metric;
+        private String result;
+        private boolean retval;
 
 	/**
 	 * Compare two images given a metric
@@ -43,6 +46,7 @@ public class Comparison {
 		operation = new IMOperation();
 		operation.metric(metric.name());
 		operation.fuzz(fuzz);
+                this.metric = metric;
 	}
 
 	public boolean compare(BufferedImage image1, BufferedImage image2)
@@ -53,9 +57,31 @@ public class Comparison {
 		operation.addImage();
 		operation.addImage("null:-");
 		command.run(operation, image1, image2);
-
-		// FIXME: return if images match or not
-		return false;
+                
+                result = this.getStderr().get(this.getStderr().size()-1).
+                                replaceAll("(all:\\s*)|\\(|\\)", "").trim();
+                                
+                retval = false;
+                
+                switch(metric) {
+                    case AE:    retval = Integer.parseInt(result)==0; break;
+                    case PAE:   retval = Integer.parseInt(String.valueOf(result.
+                                charAt(0)))==0; break;
+                    case PSNR:  retval = result.equalsIgnoreCase("inf"); break;
+                    case MAE:   retval = Integer.parseInt(String.valueOf(result.
+                                charAt(0)))==0; break;
+                    case MSE:   retval = Integer.parseInt(String.valueOf(result.
+                                charAt(0)))==0; break;
+                    case RMSE:  retval = Integer.parseInt(String.valueOf(result.
+                                charAt(0)))==0; break;
+                    case MEPP:  retval = Integer.parseInt(String.valueOf(result.
+                                charAt(0)))==0; break;
+                    case FUZZ:  retval = Integer.parseInt(String.valueOf(result.
+                                charAt(0)))==0; break;
+                    case NCC:   retval = Integer.parseInt(result)==1; break;
+                }
+                
+		return retval;
 	}
 
 	public void setVerbose() {
