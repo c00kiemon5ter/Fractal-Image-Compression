@@ -16,74 +16,78 @@ import org.im4java.process.ArrayListOutputConsumer;
  */
 public class Comparison {
 
-	public enum Metric {
+    public enum Metric {
 
-		AE, PAE, PSNR, MAE, MSE, RMSE, MEPP, FUZZ, NCC
-	}
-	private IMOperation operation;
-	private ArrayListOutputConsumer stdout;
-	private static ImageCommand command = new ImageMagickCmd("compare");
-        private Metric metric;
-        private String result;
-        private boolean retval;
+        AE, PAE, PSNR, MAE, MSE, RMSE, MEPP, FUZZ, NCC
+    }
+    private IMOperation operation;
+    private ArrayListOutputConsumer stdout;
+    private static ImageCommand command = new ImageMagickCmd("compare");
+    private Metric metric;
 
-	/**
-	 * Compare two images given a metric
-	 * 
-	 * @param metric the metric to use to compare images
-	 */
-	public Comparison(Metric metric) {
-		this(metric, 0);
-	}
+    /**
+     * Compare two images given a metric
+     * 
+     * @param metric the metric to use to compare images
+     */
+    public Comparison(Metric metric) {
+        this(metric, 0);
+    }
 
-	/**
-	 * Compare two images given a metric
-	 * 
-	 * @param metric the metric to use to compare images
-	 * @param fuzz the error acceptance factor
-	 */
-	public Comparison(Metric metric, double fuzz) {
-		operation = new IMOperation();
-		operation.metric(metric.name());
-		operation.fuzz(fuzz);
-                this.metric = metric;
-	}
+    /**
+     * Compare two images given a metric
+     * 
+     * @param metric the metric to use to compare images
+     * @param fuzz the error acceptance factor
+     */
+    public Comparison(Metric metric, double fuzz) {
+        operation = new IMOperation();
+        operation.metric(metric.name());
+        operation.fuzz(fuzz);
+        stdout = new ArrayListOutputConsumer();
+        command.setOutputConsumer(stdout);
+        operation.addImage();
+        operation.addImage();
+        operation.addImage("null:-");
+        this.metric = metric;
+    }
 
-	public boolean compare(BufferedImage image1, BufferedImage image2)
-			throws IOException, InterruptedException, IM4JavaException {
-		stdout = new ArrayListOutputConsumer();
-		command.setOutputConsumer(stdout);
-		operation.addImage();
-		operation.addImage();
-		operation.addImage("null:-");
-		command.run(operation, image1, image2);
-                
-                result = this.getStderr().get(this.getStderr().size()-1).
-                                replaceAll("(all:\\s*)|\\(|\\)", "").trim();
-                                
-                retval = false;
-                
-                switch(metric) {
-                    case AE:    retval = Integer.parseInt(result)==0; break;
-                    case PAE:case MAE:case MSE:case RMSE:case MEPP:case FUZZ:
-                                retval = Integer.parseInt(String.valueOf(result.
-                                charAt(0)))==0; break;
-                    case PSNR:  retval = result.equalsIgnoreCase("inf"); break;
-                    case NCC:   retval = Integer.parseInt(result)==1; break;
-                }
-                
-		return retval;
-	}
+    public boolean compare(BufferedImage image1, BufferedImage image2)
+            throws IOException, InterruptedException, IM4JavaException {
+        command.run(operation, image1, image2);
 
-	public void setVerbose() {
-		operation.verbose();
-	}
+        String result = this.getStderr().get(this.getStderr().size() - 1).
+                replaceAll("(all:\\s*)|\\(|\\)", "").trim();
 
-	public ArrayList<String> getStdout() {
-		return stdout.getOutput();
-	}
+        switch (metric) {
+            case AE:
+                return Integer.parseInt(result) == 0;
+            case PAE:
+            case MAE:
+            case MSE:
+            case RMSE:
+            case MEPP:
+            case FUZZ:
+                return Integer.parseInt(String.valueOf(result.charAt(0))) == 0;
+            case PSNR:
+                return result.equalsIgnoreCase("inf");
+            case NCC:
+                return Integer.parseInt(result) == 1;
+            default:
+                return false;
+        }
 
-	public ArrayList<String> getStderr() {
-		return command.getErrorText();
-	}
+    }
+
+    public void setVerbose() {
+        operation.verbose();
+    }
+
+    public ArrayList<String> getStdout() {
+        return stdout.getOutput();
+    }
+
+    public ArrayList<String> getStderr() {
+        return command.getErrorText();
+    }
 }
