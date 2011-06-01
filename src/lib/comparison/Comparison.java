@@ -65,19 +65,10 @@ public class Comparison {
                 
                 switch(metric) {
                     case AE:    retval = Integer.parseInt(result)==0; break;
-                    case PAE:   retval = Integer.parseInt(String.valueOf(result.
+                    case PAE:case MAE:case MSE:case RMSE:case MEPP:case FUZZ:
+                                retval = Integer.parseInt(String.valueOf(result.
                                 charAt(0)))==0; break;
                     case PSNR:  retval = result.equalsIgnoreCase("inf"); break;
-                    case MAE:   retval = Integer.parseInt(String.valueOf(result.
-                                charAt(0)))==0; break;
-                    case MSE:   retval = Integer.parseInt(String.valueOf(result.
-                                charAt(0)))==0; break;
-                    case RMSE:  retval = Integer.parseInt(String.valueOf(result.
-                                charAt(0)))==0; break;
-                    case MEPP:  retval = Integer.parseInt(String.valueOf(result.
-                                charAt(0)))==0; break;
-                    case FUZZ:  retval = Integer.parseInt(String.valueOf(result.
-                                charAt(0)))==0; break;
                     case NCC:   retval = Integer.parseInt(result)==1; break;
                 }
                 
