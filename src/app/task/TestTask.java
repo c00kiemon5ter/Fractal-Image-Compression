@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import lib.comparison.Comparison;
+import lib.transformations.AffineTransformer;
 
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
@@ -46,7 +47,8 @@ public class TestTask extends Task {
 		//testIm4javaConvertDiff();
 		//testRectTiler();
 		//testAdaptRectTiler();
-		testComparison();
+		//testComparison();
+                testAffineTransformation();
 	}
 
 	/**
@@ -168,5 +170,15 @@ public class TestTask extends Task {
 		} catch (IM4JavaException ex) {
 			System.err.printf("Couldn't run op: convert im4jve\n");
 		}
+	}
+        
+        
+        /**
+	 * Test the affine transformation of images.
+	 */
+	private void testAffineTransformation() {
+		AffineTransformer transformer = new AffineTransformer( new File("data", "lena.png"), new File("data", "lena_affined.png") );
+		transformer.setVerbose();  
+		transformer.applyAllTransforms(0); 
 	}
 }
