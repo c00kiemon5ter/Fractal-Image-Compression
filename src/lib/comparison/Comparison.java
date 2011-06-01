@@ -18,7 +18,28 @@ public class Comparison {
 
     public enum Metric {
 
-        AE, PAE, PSNR, MAE, MSE, RMSE, MEPP, FUZZ, NCC
+        AE, PAE, PSNR, MAE, MSE, RMSE, MEPP, FUZZ, NCC;
+
+        public boolean isEqual(String result) {
+            switch (this) {
+                case AE:
+                    return Integer.parseInt(result) == 0;
+                case PAE:
+                case MAE:
+                case MSE:
+                case RMSE:
+                case MEPP:
+                case FUZZ:
+                    return Integer.parseInt(String.valueOf(result.charAt(0))) == 0;
+                case PSNR:
+                    return result.equalsIgnoreCase("inf");
+                case NCC:
+                    return Integer.parseInt(result) == 1;
+                default:
+                    return false;
+            }
+        }
+    ;
     }
     private IMOperation operation;
     private ArrayListOutputConsumer stdout;
@@ -59,23 +80,7 @@ public class Comparison {
         String result = this.getStderr().get(this.getStderr().size() - 1).
                 replaceAll("(all:\\s*)|\\(|\\)", "").trim();
 
-        switch (metric) {
-            case AE:
-                return Integer.parseInt(result) == 0;
-            case PAE:
-            case MAE:
-            case MSE:
-            case RMSE:
-            case MEPP:
-            case FUZZ:
-                return Integer.parseInt(String.valueOf(result.charAt(0))) == 0;
-            case PSNR:
-                return result.equalsIgnoreCase("inf");
-            case NCC:
-                return Integer.parseInt(result) == 1;
-            default:
-                return false;
-        }
+        return metric.isEqual(result);
 
     }
 
