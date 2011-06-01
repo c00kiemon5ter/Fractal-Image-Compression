@@ -3,16 +3,16 @@ package app.task;
 import app.Err;
 import app.Opts;
 
-import lib.tilers.RectangularTiler;
 import lib.tilers.Tiler;
+import lib.tilers.RectangularTiler;
+import lib.tilers.AdaptiveRectangularTiler;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
-
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import lib.tilers.AdaptiveRectangularTiler;
+import lib.comparison.Comparison;
 
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
@@ -47,7 +47,8 @@ public class TestTask extends Task {
 		//testIm4javaConvertDiff();
 		//testIm4javaCompare();
 		//testRectTiler();
-		testAdaptRectTiler();
+		//testAdaptRectTiler();
+		testComparison();
 	}
 
 	/**
@@ -106,6 +107,15 @@ public class TestTask extends Task {
 				System.err.printf("Couldn't write image: %d\n", i);
 			}
 		}
+	}
+
+	/**
+	 * Test the Comparison of images.
+	 */
+	private void testComparison() {
+		Comparison comparison = new Comparison(Comparison.Metric.AE);
+		comparison.setVerboseOn();
+		comparison.compare(image, image);
 	}
 
 	/** *********************
@@ -172,7 +182,7 @@ public class TestTask extends Task {
 
 	/**
 	 * TODO: im4java compare + NCC metric + streams
-	 * 
+	 *
 	 * cli equivalent:
 	 * $ compare -metric NCC -fuzz 5% in1.jpg in2.jpg diff.jpg
 	 */
