@@ -3,17 +3,16 @@ package lib.comparison;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.im4java.core.IM4JavaException;
 import org.im4java.core.IMOperation;
 import org.im4java.core.ImageCommand;
+import org.im4java.core.ImageMagickCmd;
 import org.im4java.process.ArrayListOutputConsumer;
 
 /**
  * Compares two pictures with a given metric.
+ * 
  * @see http://www.imagemagick.org/Usage/compare/
- * @author Periklis Ntanasis
  */
 public class Comparison {
 
@@ -21,72 +20,53 @@ public class Comparison {
 
 		AE, PAE, PSNR, MAE, MSE, RMSE, MEPP, FUZZ, NCC
 	}
-	private Metric metric;
-	private int fuzz;
 	private IMOperation operation;
-	private ArrayList<String> arguments = new ArrayList<String>();
-	private ArrayListOutputConsumer output;
-	private ImageCommand compare = new ImageCommand();
+	private ArrayListOutputConsumer stdout;
+	private static ImageCommand command = new ImageMagickCmd("compare");
 
 	/**
+	 * Compare two images given a metric
 	 * 
-	 * @param metric Can be one of: AE, PAE, PSNR, MAE, MSE, RMSE, MEPP, FUZZ, NCC
+	 * @param metric the metric to use to compare images
 	 */
 	public Comparison(Metric metric) {
-		this.metric = metric;
-		arguments.add("-metric");
-		arguments.add(metric.toString());
+		this(metric, 0);
 	}
 
 	/**
+	 * Compare two images given a metric
 	 * 
-	 * @param metric Can be one of: AE, PAE, PSNR, MAE, MSE, RMSE, MEPP, FUZZ, NCC
-	 * @param fuzz distance - colors within this distance are considered equal
+	 * @param metric the metric to use to compare images
+	 * @param fuzz the error acceptance factor
 	 */
-	public Comparison(Metric metric, int fuzz) {
-		this.metric = metric;
-		this.fuzz = fuzz;
-		arguments.add("-metric");
-		arguments.add(metric.toString());
-		arguments.add("-fuzz");
-		arguments.add(fuzz + "%");
-	}
-
-	public boolean compare(BufferedImage image1, BufferedImage image2) {
-		try {
-			createOperation();
-			compare.run(operation, image1, image2);
-		} catch (IOException ex) {
-			Logger.getLogger(Comparison.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (InterruptedException ex) {
-			Logger.getLogger(Comparison.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IM4JavaException ex) {
-			Logger.getLogger(Comparison.class.getName()).log(Level.SEVERE, null, ex);
-		}
-
-		ArrayList<String> cmdOutput = output.getOutput();
-		for (String line : cmdOutput) {
-			System.out.println(line);
-		}
-
-		return false;
-	}
-
-	public void setVerboseOn() {
-		arguments.add("-verbose");
-	}
-
-	private void createOperation() {
+	public Comparison(Metric metric, double fuzz) {
 		operation = new IMOperation();
-		operation.addRawArgs(arguments);
+		operation.metric(metric.name());
+		operation.fuzz(fuzz);
+	}
+
+	public boolean compare(BufferedImage image1, BufferedImage image2)
+			throws IOException, InterruptedException, IM4JavaException {
+		stdout = new ArrayListOutputConsumer();
+		command.setOutputConsumer(stdout);
 		operation.addImage();
 		operation.addImage();
 		operation.addImage("null:-");
+		command.run(operation, image1, image2);
 
-		output = new ArrayListOutputConsumer();
+		// FIXME: return if images match or not
+		return false;
+	}
 
-		compare = new ImageCommand();
-		compare.setOutputConsumer(output);
-		compare.setCommand("compare");
+	public void setVerbose() {
+		operation.verbose();
+	}
+
+	public ArrayList<String> getStdout() {
+		return stdout.getOutput();
+	}
+
+	public ArrayList<String> getStderr() {
+		return command.getErrorText();
 	}
 }
