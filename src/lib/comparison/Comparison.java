@@ -16,82 +16,74 @@ import org.im4java.process.ArrayListOutputConsumer;
  */
 public class Comparison {
 
-    public enum Metric {
+	private IMOperation operation;
+	private ArrayListOutputConsumer stdout;
+	private static ImageCommand command = new ImageMagickCmd("compare");
+	private final Metric metric;
+	private String difference;
 
-        AE, PAE, PSNR, MAE, MSE, RMSE, MEPP, FUZZ, NCC;
+	/**
+	 * Compare two images given a metric
+	 * 
+	 * @param metric the metric to use to compare images
+	 */
+	public Comparison(Metric metric) {
+		this(metric, 0.0D);
+	}
 
-        public boolean isEqual(String result) {
-            switch (this) {
-                case AE:
-                    return Integer.parseInt(result) == 0;
-                case PAE:
-                case MAE:
-                case MSE:
-                case RMSE:
-                case MEPP:
-                case FUZZ:
-                    return Integer.parseInt(String.valueOf(result.charAt(0))) == 0;
-                case PSNR:
-                    return result.equalsIgnoreCase("inf");
-                case NCC:
-                    return Integer.parseInt(result) == 1;
-                default:
-                    return false;
-            }
-        }
-    }
-    private IMOperation operation;
-    private ArrayListOutputConsumer stdout;
-    private static ImageCommand command = new ImageMagickCmd("compare");
-    private Metric metric;
+	/**
+	 * Compare two images given a metric and an acceptance error factor
+	 * 
+	 * @param metric the metric to use to compare images
+	 * @param fuzz the error acceptance factor
+	 */
+	public Comparison(Metric metric, double fuzz) {
+		this.metric = metric;
+		this.stdout = new ArrayListOutputConsumer();
+		command.setOutputConsumer(this.stdout);
+		this.operation = new IMOperation();
+		this.operation.metric(metric.name());
+		this.operation.fuzz(fuzz);
+		this.operation.addImage();
+		this.operation.addImage();
+		this.operation.addImage("null:-");
+	}
 
-    /**
-     * Compare two images given a metric
-     * 
-     * @param metric the metric to use to compare images
-     */
-    public Comparison(Metric metric) {
-        this(metric, 0);
-    }
+	/**
+	 * compare the given images 
+	 * 
+	 * @param imageA image to compare
+	 * @param imageB image to compare with imageA
+	 * @return whether the images are different or not
+	 */
+	public boolean compare(BufferedImage imageA, BufferedImage imageB)
+			throws IOException, InterruptedException, IM4JavaException {
+		command.run(operation, imageA, imageB);
+		this.difference = command.getErrorText().get(command.getErrorText().size() - 1).split("\\s+")[0];
+		return this.metric.equalval().equals(this.difference);
+	}
 
-    /**
-     * Compare two images given a metric
-     * 
-     * @param metric the metric to use to compare images
-     * @param fuzz the error acceptance factor
-     */
-    public Comparison(Metric metric, double fuzz) {
-        operation = new IMOperation();
-        operation.metric(metric.name());
-        operation.fuzz(fuzz);
-        stdout = new ArrayListOutputConsumer();
-        command.setOutputConsumer(stdout);
-        operation.addImage();
-        operation.addImage();
-        operation.addImage("null:-");
-        this.metric = metric;
-    }
+	/**
+	 * 
+	 * @return the difference between the two images
+	 */
+	public String getDifference() {
+		return this.difference;
+	}
 
-    public boolean compare(BufferedImage image1, BufferedImage image2)
-            throws IOException, InterruptedException, IM4JavaException {
-        command.run(operation, image1, image2);
+	/**
+	 * 
+	 * @return the output printed on standard out stream
+	 */
+	public ArrayList<String> getStdout() {
+		return stdout.getOutput();
+	}
 
-        String result = this.getStderr().get(this.getStderr().size() - 1).
-                replaceAll("(all:\\s*)|\\(|\\)", "").trim();
-
-        return metric.isEqual(result);
-
-    }
-
-    public void setVerbose() {
-        operation.verbose();
-    }
-
-    public ArrayList<String> getStdout() {
-        return stdout.getOutput();
-    }
-
-    public ArrayList<String> getStderr() {
-        return command.getErrorText();
-    }
+	/**
+	 * 
+	 * @return the output printed on standard error stream
+	 */
+	public ArrayList<String> getStderr() {
+		return command.getErrorText();
+	}
 }
