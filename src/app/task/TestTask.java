@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import lib.comparison.Comparison;
+import lib.comparison.Metric;
 
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
@@ -87,10 +88,13 @@ public class TestTask extends Task {
 	 * Test the Comparison of images.
 	 */
 	private void testComparison() {
-		Comparison comparison = new Comparison(Comparison.Metric.AE, 5);
-		comparison.setVerbose();
+		Comparison comparison = new Comparison(Metric.PSNR, 5.2D);
 		try {
-			comparison.compare(image, image);
+			if (comparison.compare(image, image)) {
+				System.out.printf("Images match: %s\n", comparison.getDifference());
+			} else {
+				System.out.printf("Images differ: %s\n", comparison.getDifference());
+			}
 		} catch (IOException ex) {
 			System.err.printf("Couldn't run op: compare ioe\n");
 		} catch (InterruptedException ex) {
@@ -98,13 +102,15 @@ public class TestTask extends Task {
 		} catch (IM4JavaException ex) {
 			System.err.printf("Couldn't run op: compare im4jve\n");
 		}
-		System.out.println("== out stream ==");
-		for (String line : comparison.getStdout()) {
-			System.out.println(line);
-		}
-		System.err.println("\n== error stream ==");
-		for (String line : comparison.getStderr()) {
-			System.err.println(line);
+		if (properties.getProperty(Opts.VERBOSE.toString()) != null) {
+			System.out.println("== out stream ==");
+			for (String line : comparison.getStdout()) {
+				System.out.println(line);
+			}
+			System.err.println("\n== error stream ==");
+			for (String line : comparison.getStderr()) {
+				System.err.println(line);
+			}
 		}
 	}
 
