@@ -1,7 +1,9 @@
 package lib.transformations;
 
 import java.awt.Graphics;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.io.IOException;
 
 import org.im4java.core.ConvertCmd;
@@ -108,5 +110,10 @@ public class ImageTransformer {
 		g.drawImage(inputimage, 0, 0, null);
 		g.dispose();
 		return grayImg;
+	}
+
+	public static BufferedImage colorSpaceFilteredImage(BufferedImage inputimage,
+														int colorspace) {
+		return new ColorConvertOp(ColorSpace.getInstance(colorspace), null).filter(inputimage, null);
 	}
 }

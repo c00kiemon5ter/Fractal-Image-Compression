@@ -2,7 +2,6 @@ package app.task;
 
 import app.Err;
 import app.Opts;
-import java.awt.Graphics;
 import java.awt.color.ColorSpace;
 
 import lib.tilers.Tiler;
@@ -17,7 +16,6 @@ import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 import javax.imageio.ImageIO;
 
 import org.im4java.core.IM4JavaException;
@@ -138,6 +136,8 @@ public class TestTask extends Task {
 			ImageIO.write(ImageTransformer.rotate(inputimg, 90.0), "PNG", new File(outputname + "_rotate.png"));
 			System.out.println("GRAYSCALE");
 			ImageIO.write(ImageTransformer.grayScaleImage(inputimg), "PNG", new File(outputname + "_gray.png"));
+			System.out.println("FILTER");
+			ImageIO.write(ImageTransformer.colorSpaceFilteredImage(inputimg, ColorSpace.CS_LINEAR_RGB), "PNG", new File(outputname + "_cs.png"));
 		} catch (IOException ex) {
 			System.err.printf("Couldn't run op: affine ioe\n");
 		} catch (InterruptedException ex) {
