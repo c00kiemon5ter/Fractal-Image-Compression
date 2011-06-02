@@ -7,35 +7,34 @@ import lib.tilers.Tiler;
 import lib.tilers.RectangularTiler;
 import lib.tilers.AdaptiveRectangularTiler;
 
+import lib.comparison.ImageComparator;
+import lib.comparison.Metric;
+import lib.transformations.ImageTransformer;
+
+import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import lib.comparison.Comparison;
-import lib.comparison.Metric;
-import lib.transformations.AffineTransformer;
 
-import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
-import org.im4java.core.IMOperation;
-import org.im4java.core.ImageCommand;
-import org.im4java.process.ArrayListOutputConsumer;
 
 /**
  * Test cases
  */
 public class TestTask extends Task {
 
-	private BufferedImage image;
-	private File input, output;
+	private BufferedImage inputimg;
+	private File inputname;
+	private String outputname;
+	private static String sep = "-----------------------------------------";
 
 	public TestTask(Properties properties) {
 		super(properties);
-		input = new File(properties.getProperty(Opts.INPUT.toString()));
-		output = new File(properties.getProperty(Opts.OUTPUT.toString()));
+		inputname = new File(properties.getProperty(Opts.INPUT.toString()));
+		outputname = properties.getProperty(Opts.OUTPUT.toString());
 		try {
-			image = ImageIO.read(input);
+			inputimg = ImageIO.read(inputname);
 		} catch (IOException ex) {
 			System.err.println(Err.IMAGE_NOT_FOUND.description());
 			System.exit(Err.IMAGE_NOT_FOUND.errcode());
@@ -44,12 +43,10 @@ public class TestTask extends Task {
 
 	@Override
 	public void run() {
-		//testIm4javaResize();
-		//testIm4javaConvertDiff();
 		//testRectTiler();
 		//testAdaptRectTiler();
-		testComparison();
-		testAffineTransformation();
+		//testComparison();
+		testTransformation();
 	}
 
 	/**
@@ -57,16 +54,18 @@ public class TestTask extends Task {
 	 * Write the tiled blocks.
 	 */
 	private void testRectTiler() {
+		System.out.printf("%s\n start of testRectTiler \n%s\n", sep, sep);
 		Tiler tiler = new RectangularTiler(5, 5);
-		BufferedImage[] blocks = tiler.tile(image);
+		BufferedImage[] blocks = tiler.tile(inputimg);
 		System.out.println(blocks.length);
 		for (int i = 0; i < blocks.length; i++) {
 			try {
-				ImageIO.write(blocks[i], "PNG", new File(String.format("%s/tile_block_%d.png", output.getParent(), i)));
+				ImageIO.write(blocks[i], "PNG", new File(String.format("tile_block_%d.png", i)));
 			} catch (IOException ex) {
 				System.err.printf("Couldn't write image: %d\n", i);
 			}
 		}
+		System.out.printf("%s\n end of testRectTiler \n%s\n", sep, sep);
 	}
 
 	/**
@@ -74,25 +73,28 @@ public class TestTask extends Task {
 	 * Write the tiled blocks.
 	 */
 	private void testAdaptRectTiler() {
+		System.out.printf("%s\n start of testAdaptRectTiler \n%s\n", sep, sep);
 		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
-		BufferedImage[] blocks = tiler.tile(image);
+		BufferedImage[] blocks = tiler.tile(inputimg);
 		System.out.println(blocks.length);
 		for (int i = 0; i < blocks.length; i++) {
 			try {
-				ImageIO.write(blocks[i], "PNG", new File(String.format("%s/tile_block_%d.png", output.getParent(), i)));
+				ImageIO.write(blocks[i], "PNG", new File(String.format("tile_block_%d.png", i)));
 			} catch (IOException ex) {
 				System.err.printf("Couldn't write image: %d\n", i);
 			}
 		}
+		System.out.printf("%s\n end of testAdaptRectTiler \n%s\n", sep, sep);
 	}
 
 	/**
-	 * Test the Comparison of images.
+	 * Test the ImageComparator of images.
 	 */
 	private void testComparison() {
-		Comparison comparison = new Comparison(Metric.PSNR, 5.2D);
+		System.out.printf("%s\n start of testComparison \n%s\n", sep, sep);
+		ImageComparator comparison = new ImageComparator(Metric.PSNR, 5.2D);
 		try {
-			if (comparison.compare(image, image)) {
+			if (comparison.compare(inputimg, inputimg)) {
 				System.out.printf("Images match: %s\n", comparison.getDifference());
 			} else {
 				System.out.printf("Images differ: %s\n", comparison.getDifference());
@@ -114,76 +116,30 @@ public class TestTask extends Task {
 				System.err.println(line);
 			}
 		}
+		System.out.printf("%s\n end of testComparison \n%s\n", sep, sep);
 	}
 
 	/**
-	 * Test the affine transformation of images.
+	 * Test the affine transformation of images
 	 */
-	private void testAffineTransformation() {
-		AffineTransformer transformer = new AffineTransformer(new File("data", "lena.png"), new File("data", "lena_affined.png"));
-		transformer.setVerbose();
-		transformer.applyAllTransforms(0);
-	}
-
-	/** *********************
-	 * ImageMagick Bindings *
-	 *                      *
-	 * evaluate im4java lib *
-	 * TODO: Pipe + BuffImg *
-	 * **********************/
-	/**
-	 * Resize to half input image and store to output
-	 */
-	private void testIm4javaResize() {
-		ImageCommand cmd = new ConvertCmd();
-		IMOperation op = new IMOperation();
-		op.resize(image.getHeight() / 2, image.getWidth() / 2);
-		op.addImage(input.getPath());
-		op.addImage(output.getParent() + "/half" + "_small.jpg");
+	private void testTransformation() {
+		System.out.printf("%s\n start of testAffineTransformation \n%s\n", sep, sep);
 		try {
-			cmd.run(op);
+			System.out.println("FLIP");
+			ImageIO.write(ImageTransformer.flip(inputimg), "PNG", new File(outputname + "_flip.png"));
+			System.out.println("FLOP");
+			ImageIO.write(ImageTransformer.flop(inputimg), "PNG", new File(outputname + "_flop.png"));
+			System.out.println("SHRINK");
+			ImageIO.write(ImageTransformer.shrinkToHalf(inputimg), "PNG", new File(outputname + "_shrink.png"));
+			System.out.println("ROTATE");
+			ImageIO.write(ImageTransformer.rotate(inputimg, 90.0), "PNG", new File(outputname + "_rotate.png"));
 		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: resize ioe\n");
+			System.err.printf("Couldn't run op: affine ioe\n");
 		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: resize ie\n");
+			System.err.printf("Couldn't run op: affine ie\n");
 		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: resize im4jve\n");
+			System.err.printf("Couldn't run op: affine im4jve\n");
 		}
-	}
-
-	/**
-	 * search for similarity -- one of billions of ways.
-	 *
-	 * cli equivalent:
-	 * $ convert img1.png img2.png -compose difference \
-	 *	-composite -separate -background black -compose plus \
-	 *	-flatten diff.png
-	 *
-	 */
-	private void testIm4javaConvertDiff() {
-		ImageCommand cmd = new ConvertCmd();
-		IMOperation op = new IMOperation();
-		op.addImage(output.getParent() + "/block_44_11.png");
-		op.addImage(output.getParent() + "/output.png");
-		op.compose("difference");
-		op.composite();
-		op.separate();
-		op.background("black");
-		op.compose("plus");
-		op.flatten();
-		op.addImage(output.getParent() + "/diff_00_01.png");
-		try {
-			ArrayListOutputConsumer oc = new ArrayListOutputConsumer();
-			cmd.setOutputConsumer(oc);
-			cmd.run(op);
-			System.out.println("OC :: " + oc.getOutput());
-			System.out.println("EC :: " + cmd.getErrorText().toString());
-		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: convert ioe\n");
-		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: convert ie\n");
-		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: convert im4jve\n");
-		}
+		System.out.printf("%s\n end of testAffineTransformation\n%s\n", sep, sep);
 	}
 }

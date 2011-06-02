@@ -11,7 +11,7 @@ import org.im4java.core.Stream2BufferedImage;
 /**
  * Produces transformed copies of a given input image.
  */
-public class AffineTransformer {
+public class ImageTransformer {
 
 	private enum DefaultAffinePropertiesMaps {
 
