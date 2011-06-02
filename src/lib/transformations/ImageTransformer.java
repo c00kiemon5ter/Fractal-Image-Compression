@@ -1,5 +1,6 @@
 package lib.transformations;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -97,5 +98,15 @@ public class ImageTransformer {
 		command.run(operation, inputimage);
 
 		return streamToBuffImg.getImage();
+	}
+
+	public static BufferedImage grayScaleImage(BufferedImage inputimage) {
+		BufferedImage grayImg = new BufferedImage(inputimage.getWidth(),
+												  inputimage.getHeight(),
+												  BufferedImage.TYPE_BYTE_GRAY);
+		Graphics g = grayImg.getGraphics();
+		g.drawImage(inputimage, 0, 0, null);
+		g.dispose();
+		return grayImg;
 	}
 }
