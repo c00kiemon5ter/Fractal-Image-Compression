@@ -1,119 +1,101 @@
 package lib.transformations;
 
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
 import org.im4java.core.IMOperation;
-import org.im4java.core.ImageCommand;
+import org.im4java.core.Stream2BufferedImage;
 
 /**
- * Produces transformed copies of a given input image. The copies are saved as "id+output.getName()" under the given output directory.
- * 
- * @author uberspot
+ * Produces transformed copies of a given input image.
  */
 public class AffineTransformer {
 
-	private File input, output;
-	private IMOperation operation;
-	private static ImageCommand command = new ConvertCmd();
-	private boolean verbose;
+	private enum DefaultAffinePropertiesMaps {
 
-	public AffineTransformer(String input, String output) {
-		this(new File(input), new File(output));
-	}
+		FLIP(1.0, -1.0, 0.0, 0.0),
+		FLOP(-1.0, 1.0, 0.0, 0.0),
+		SHRINK_HALF(0.5, 0.5, 0.0, 0.0),
+		SHEAR(0.0, 0.0, 0.0, 0.0),; // FIXME: shear affineTransform
+		private AffinePropertiesMap properties;
 
-	public AffineTransformer(File input, File output) {
-		this.input = input;
-		this.output = output;
-		verbose = false;
-		operation = new IMOperation();
-	}
-
-	/**
-	 * Transforms the input image.
-	 * @param id the sequence number that will be added to the output image name
-	 * @param scalex
-	 * @param scaley
-	 * @param shearx
-	 * @param sheary 
-	 */
-	public void transform(int id, double scalex, double scaley, double shearx, double sheary) {
-		operation = new IMOperation(); //clear old operations
-
-		operation.addImage(input.getPath());
-		if (verbose) {
-			operation.verbose();
+		private DefaultAffinePropertiesMaps(double scalex, double scaley,
+											double shearx, double sheary) {
+			this.properties = new AffinePropertiesMap();
+			this.properties.setProperty(AffineProperty.SCALE_X, scalex);
+			this.properties.setProperty(AffineProperty.SCALE_Y, scaley);
+			this.properties.setProperty(AffineProperty.SHEAR_X, shearx);
+			this.properties.setProperty(AffineProperty.SHEAR_Y, sheary);
 		}
+
+		public AffinePropertiesMap properties() {
+			return this.properties;
+		}
+	}
+	private static ConvertCmd command = new ConvertCmd();
+
+	public static BufferedImage affineTransform(BufferedImage inputimage,
+												AffinePropertiesMap properties)
+			throws IOException, InterruptedException, IM4JavaException {
+		return affineTransform(inputimage,
+							   properties.getPropery(AffineProperty.SCALE_X),
+							   properties.getPropery(AffineProperty.SCALE_Y),
+							   properties.getPropery(AffineProperty.SHEAR_X),
+							   properties.getPropery(AffineProperty.SHEAR_Y));
+	}
+
+	public static BufferedImage affineTransform(BufferedImage inputimage,
+												double scalex, double scaley,
+												double shearx, double sheary)
+			throws IOException, InterruptedException, IM4JavaException {
+		IMOperation operation = new IMOperation();
+		operation.addImage("data/lena.png");
 		operation.mattecolor();
 		operation.virtualPixel();
 		operation.affine(scalex, shearx, sheary, scaley, 0.0, 0.0);
 		operation.transform();
-		operation.addImage(output.getParent() + File.separator + id + "_" + output.getName());
-		try {
-			command.run(operation);
-		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: affine ioe\n" + ex + "\n");
-		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: affine ie\n" + ex + "\n");
-		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: affine im4jve\n" + ex + "\n");
-		}
+		operation.addImage(":-");
+
+		Stream2BufferedImage streamToBuffImg = new Stream2BufferedImage();
+		command.setOutputConsumer(streamToBuffImg);
+		command.run(operation);
+
+		return streamToBuffImg.getImage();
 	}
 
-	public void setVerbose() {
-		this.verbose = true;
+	public static BufferedImage flip(BufferedImage inputimage)
+			throws IOException, InterruptedException, IM4JavaException {
+		return affineTransform(inputimage, DefaultAffinePropertiesMaps.FLIP.properties);
 	}
 
-	public void flip(int id) {
-		this.transform(id, 1.0, -1.0, 0.0, 0.0);
+	public static BufferedImage flop(BufferedImage inputimage)
+			throws IOException, InterruptedException, IM4JavaException {
+		return affineTransform(inputimage, DefaultAffinePropertiesMaps.FLOP.properties);
 	}
 
-	public void flop(int id) {
-		this.transform(id, -1.0, 1.0, 0.0, 0.0);
+	public static BufferedImage shrinkToHalf(BufferedImage inputimage)
+			throws IOException, InterruptedException, IM4JavaException {
+		return affineTransform(inputimage, DefaultAffinePropertiesMaps.SHRINK_HALF.properties);
 	}
 
-	public void rotate(int id, int degrees) {
-		operation = new IMOperation(); //clear old operations
-
-		operation.addImage(input.getPath());
-		if (verbose) {
-			operation.verbose();
-		}
-		operation.background("black");
-		operation.virtualPixel("background");
-		operation.distort("ScaleRotateTranslate", "" + degrees);
-		operation.addImage(output.getParent() + File.separator + id + "_" + output.getName());
-		try {
-			command.run(operation);
-		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: affine ioe\n" + ex + "\n");
-		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: affine ie\n" + ex + "\n");
-		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: affine im4jve\n" + ex + "\n");
-		}
+	public static BufferedImage shear(BufferedImage inputimage)
+			throws IOException, InterruptedException, IM4JavaException {
+		return affineTransform(inputimage, DefaultAffinePropertiesMaps.SHEAR.properties);
 	}
 
-	public void shrinkToHalf(int id) {
-		this.transform(id, 0.5, 0.5, 0.0, 0.0);
-	}
+	public static BufferedImage rotate(BufferedImage inputimage, double degrees)
+			throws IOException, InterruptedException, IM4JavaException {
+		IMOperation operation = new IMOperation();
+		operation.addImage();
+		operation.rotate(degrees);
+		operation.addImage(":-");
 
-	public void shear() {
-		//ToDo...
-	}
+		Stream2BufferedImage streamToBuffImg = new Stream2BufferedImage();
+		command.setOutputConsumer(streamToBuffImg);
+		command.run(operation, inputimage);
 
-	/**
-	 * Apply every given transformation
-	 * 
-	 * @param initialID 
-	 */
-	public void applyAllTransforms(int initialID) {
-		this.flip(initialID++);
-		this.flop(initialID++);
-		this.shrinkToHalf(initialID++);
-		for (int i = 30; i < 330; i += 30) {
-			this.rotate(initialID++, i);
-		}
-
+		return streamToBuffImg.getImage();
 	}
 }
