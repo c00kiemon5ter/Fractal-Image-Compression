@@ -3,6 +3,8 @@ package app.task;
 import app.Err;
 import app.Opts;
 import java.awt.color.ColorSpace;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 
 import lib.tilers.Tiler;
 import lib.tilers.RectangularTiler;
@@ -51,8 +53,9 @@ public class TestTask extends Task {
 	}
 
 	/**
-	 * Test the rectangular tiler.
-	 * Write the tiled blocks.
+	 * Test the rectangular tiler
+	 * 
+	 * @see RectangularTiler
 	 */
 	private void testRectTiler() {
 		System.out.printf("%s\n start of testRectTiler \n%s\n", sep, sep);
@@ -70,8 +73,9 @@ public class TestTask extends Task {
 	}
 
 	/**
-	 * Test the adaptive rectangular tiler.
-	 * Write the tiled blocks.
+	 * Test the adaptive rectangular tiler
+	 * 
+	 * @see AdaptiveRectangularTiler
 	 */
 	private void testAdaptRectTiler() {
 		System.out.printf("%s\n start of testAdaptRectTiler \n%s\n", sep, sep);
@@ -89,7 +93,9 @@ public class TestTask extends Task {
 	}
 
 	/**
-	 * Test the ImageComparator of images.
+	 * Test the ImageComparator of images
+	 * 
+	 * @see ImageComparator
 	 */
 	private void testComparison() {
 		System.out.printf("%s\n start of testComparison \n%s\n", sep, sep);
@@ -121,7 +127,9 @@ public class TestTask extends Task {
 	}
 
 	/**
-	 * Test the affine transformation of images
+	 * Test the transformation of images
+	 * 
+	 * @see ImageTransformer
 	 */
 	private void testTransformation() {
 		System.out.printf("%s\n start of testAffineTransformation \n%s\n", sep, sep);
