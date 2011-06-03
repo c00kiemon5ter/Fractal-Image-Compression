@@ -3,8 +3,6 @@ package app.task;
 import app.Err;
 import app.Opts;
 import java.awt.color.ColorSpace;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 
 import lib.tilers.Tiler;
 import lib.tilers.RectangularTiler;
@@ -133,25 +131,32 @@ public class TestTask extends Task {
 	 */
 	private void testTransformation() {
 		System.out.printf("%s\n start of testAffineTransformation \n%s\n", sep, sep);
+		Long start = System.currentTimeMillis();
+		BufferedImage flip = ImageTransformer.flip(inputimg);
+		BufferedImage flop = ImageTransformer.flop(inputimg);
+		BufferedImage shri = ImageTransformer.shrinkToHalf(inputimg);
+		BufferedImage qrot = ImageTransformer.rotateByQuadrant(inputimg, 3);
+		BufferedImage drot = ImageTransformer.rotateByDegrees(inputimg, 60);
+		BufferedImage gray = ImageTransformer.grayScaleImage(inputimg);
+		BufferedImage filt = ImageTransformer.colorSpaceFilteredImage(inputimg, ColorSpace.CS_LINEAR_RGB);
+		System.out.printf(":: Affine operations took %dms\n", System.currentTimeMillis() - start);
 		try {
 			System.out.println("FLIP");
-			ImageIO.write(ImageTransformer.flip(inputimg), "PNG", new File(outputname + "_flip.png"));
+			ImageIO.write(flip, "PNG", new File(outputname + "_flip.png"));
 			System.out.println("FLOP");
-			ImageIO.write(ImageTransformer.flop(inputimg), "PNG", new File(outputname + "_flop.png"));
+			ImageIO.write(flop, "PNG", new File(outputname + "_flop.png"));
 			System.out.println("SHRINK");
-			ImageIO.write(ImageTransformer.shrinkToHalf(inputimg), "PNG", new File(outputname + "_shrink.png"));
-			System.out.println("ROTATE");
-			ImageIO.write(ImageTransformer.rotate(inputimg, 90.0), "PNG", new File(outputname + "_rotate.png"));
+			ImageIO.write(shri, "PNG", new File(outputname + "_shrink.png"));
+			System.out.println("Q-ROTATE");
+			ImageIO.write(qrot, "PNG", new File(outputname + "_qrot.png"));
+			System.out.println("D-ROTATE");
+			ImageIO.write(drot, "PNG", new File(outputname + "_drot.png"));
 			System.out.println("GRAYSCALE");
-			ImageIO.write(ImageTransformer.grayScaleImage(inputimg), "PNG", new File(outputname + "_gray.png"));
+			ImageIO.write(gray, "PNG", new File(outputname + "_gray.png"));
 			System.out.println("FILTER");
-			ImageIO.write(ImageTransformer.colorSpaceFilteredImage(inputimg, ColorSpace.CS_LINEAR_RGB), "PNG", new File(outputname + "_cs.png"));
+			ImageIO.write(filt, "PNG", new File(outputname + "_cs.png"));
 		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: affine ioe\n");
-		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: affine ie\n");
-		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: affine im4jve\n");
+			System.err.printf("Couldn't write image: affine\n");
 		}
 		System.out.printf("%s\n end of testAffineTransformation\n%s\n", sep, sep);
 	}
