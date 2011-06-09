@@ -12,11 +12,29 @@ import java.awt.image.ColorConvertOp;
  */
 public class ImageTransformer {
 
-	public static BufferedImage affineTransform(BufferedImage inputimage, AffineTransform transform) {
-		return new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR).filter(inputimage, null);
+	/**
+	 * The Affine transform theory:
+	 * 
+	 * [ x']   [  m00  m01  m02  ] [ x ]   [ m00x + m01y + m02 ]
+	 * [ y'] = [  m10  m11  m12  ] [ y ] = [ m10x + m11y + m12 ]
+	 * [ 1 ]   [   0    0    1   ] [ 1 ]   [         1         ]
+	 * 
+	 * The corresponding matrix values:
+	 * 
+	 * [  m00  m01  m02  ]     [ scx  shx  trx ]
+	 * [  m10  m11  m12  ] <=> [ shy  scy  try ]
+	 * [   0    0    1   ]     [  0   0     1  ]
+	 * 
+	 * 
+	 * @param inputimage the original image to apply the transformation to
+	 * @param transform the affine transformation operation-matrix
+	 * @return  the transformed image
+	 */
+	public static BufferedImage affineTransform(final BufferedImage inputimage, AffineTransform transform) {
+		return new AffineTransformOp(transform, AffineTransformOp.TYPE_NEAREST_NEIGHBOR).filter(inputimage, null);
 	}
 
-	public static BufferedImage flip(BufferedImage inputimage) {
+	public static BufferedImage flip(final BufferedImage inputimage) {
 		AffineTransform transform = new AffineTransform();
 		transform.translate(inputimage.getWidth() / 2, inputimage.getHeight() / 2);
 		transform.scale(1, -1);
@@ -24,7 +42,7 @@ public class ImageTransformer {
 		return affineTransform(inputimage, transform);
 	}
 
-	public static BufferedImage flop(BufferedImage inputimage) {
+	public static BufferedImage flop(final BufferedImage inputimage) {
 		AffineTransform transform = new AffineTransform();
 		transform.translate(inputimage.getWidth() / 2, inputimage.getHeight() / 2);
 		transform.scale(-1, 1);
@@ -32,19 +50,19 @@ public class ImageTransformer {
 		return affineTransform(inputimage, transform);
 	}
 
-	public static BufferedImage shrinkToHalf(BufferedImage inputimage) {
+	public static BufferedImage shrinkToHalf(final BufferedImage inputimage) {
 		return scale(inputimage, .5, .5);
 	}
 
-	public static BufferedImage scale(BufferedImage inputimage, double scalex, double scaley) {
+	public static BufferedImage scale(final BufferedImage inputimage, double scalex, double scaley) {
 		return affineTransform(inputimage, AffineTransform.getScaleInstance(scalex, scaley));
 	}
 
-	public static BufferedImage shear(BufferedImage inputimage, double shearx, double sheary) {
+	public static BufferedImage shear(final BufferedImage inputimage, double shearx, double sheary) {
 		return affineTransform(inputimage, AffineTransform.getShearInstance(shearx, sheary));
 	}
 
-	public static BufferedImage rotateByDegrees(BufferedImage inputimage, double degrees) {
+	public static BufferedImage rotateByDegrees(final BufferedImage inputimage, double degrees) {
 		return affineTransform(inputimage, AffineTransform.getRotateInstance(degrees,
 																			 inputimage.getWidth() / 2,
 																			 inputimage.getHeight() / 2));
