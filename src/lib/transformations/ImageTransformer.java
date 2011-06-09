@@ -28,10 +28,16 @@ public class ImageTransformer {
 	 * 
 	 * @param inputimage the original image to apply the transformation to
 	 * @param transform the affine transformation operation-matrix
+	 * @param interpolationType the interpolation type to use - one of 
+	 * AffineTransformOp.{TYPE_NEAREST_NEIGHBOR ,TYPE_BILINEAR, TYPE_BICUBIC}
 	 * @return  the transformed image
 	 */
+	public static BufferedImage affineTransform(final BufferedImage inputimage, AffineTransform transform, final int interpolationType) {
+		return new AffineTransformOp(transform, interpolationType).filter(inputimage, null);
+	}
+
 	public static BufferedImage affineTransform(final BufferedImage inputimage, AffineTransform transform) {
-		return new AffineTransformOp(transform, AffineTransformOp.TYPE_NEAREST_NEIGHBOR).filter(inputimage, null);
+		return affineTransform(inputimage, transform, AffineTransformOp.TYPE_BILINEAR);
 	}
 
 	public static BufferedImage flip(final BufferedImage inputimage) {
