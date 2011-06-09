@@ -2,6 +2,8 @@ package app.task;
 
 import app.Err;
 import app.Opts;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.color.ColorSpace;
 
 import lib.tilers.Tiler;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import lib.transformations.DefaultTransforms;
 
 import org.im4java.core.IM4JavaException;
 
@@ -46,8 +49,12 @@ public class TestTask extends Task {
 	public void run() {
 		//testRectTiler();
 		//testAdaptRectTiler();
+		testAdaptRectTilerImg();
 		//testComparison();
-		testTransformation();
+		//testTransformation();
+		for (DefaultTransforms dt : DefaultTransforms.values()) {
+			dt.transform(inputimg);
+		}
 	}
 
 	/**
@@ -88,6 +95,37 @@ public class TestTask extends Task {
 			}
 		}
 		System.out.printf("%s\n end of testAdaptRectTiler \n%s\n", sep, sep);
+	}
+
+	/** 
+	 * Draw the tiled image with its tiles.
+	 * 
+	 * @see AdaptiveRectangularTiler
+	 */
+	private void testAdaptRectTilerImg() {
+		System.out.printf("%s\n start of testAdaptRectTilerImg \n%s\n", sep, sep);
+		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
+		BufferedImage[] blocks = tiler.tile(inputimg);
+		BufferedImage rectimg = new BufferedImage(inputimg.getWidth(), inputimg.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+		Graphics g = rectimg.getGraphics();
+		g.drawImage(inputimg, 0, 0, null);
+		g.setColor(Color.BLACK);
+		int bw = blocks[0].getWidth();
+		int bh = blocks[0].getHeight();
+		int r = inputimg.getHeight() / bh;
+		int c = inputimg.getWidth() / bw;
+		for (int y = 0; y < r; y++) {
+			for (int x = 0; x < c; x++) {
+				g.drawRect(x * bw, y * bh, bw, bh);
+			}
+		}
+		g.dispose();
+		try {
+			ImageIO.write(rectimg, "PNG", new File(outputname + "_rect.png"));
+		} catch (IOException ex) {
+			System.err.printf("Couldn't write image: rects\n");
+		}
+		System.out.printf("%s\n end of testAdaptRectTilerImg \n%s\n", sep, sep);
 	}
 
 	/**
