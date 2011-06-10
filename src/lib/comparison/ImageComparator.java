@@ -37,20 +37,21 @@ public class ImageComparator implements Comparator {
 	 * @param metric the metric to use to compare images
 	 * @param fuzz the error acceptance factor
 	 */
-	public ImageComparator(Metric metric, double fuzz) {
+	public ImageComparator(final Metric metric, final double fuzz) {
 		this.metric = metric;
 		this.stdout = new ArrayListOutputConsumer();
 		command.setOutputConsumer(this.stdout);
-		this.operation = new IMOperation();
-		this.operation.metric(metric.name());
-		this.operation.fuzz(fuzz);
-		this.operation.addImage();
-		this.operation.addImage();
-		this.operation.addImage("null:-");
+		this.operation = new IMOperation() {{
+			metric(metric.name());
+			fuzz(fuzz);
+			addImage();
+			addImage();
+			addImage("null:-");
+		}};
 	}
 
 	@Override
-	public boolean compare(BufferedImage imageA, BufferedImage imageB)
+	public boolean compare(final BufferedImage imageA, final BufferedImage imageB)
 			throws IOException, InterruptedException, IM4JavaException {
 		command.run(operation, imageA, imageB);
 		this.difference = command.getErrorText().get(command.getErrorText().size() - 1).split("\\s+")[0];

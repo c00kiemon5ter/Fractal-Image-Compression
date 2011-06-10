@@ -12,7 +12,7 @@ public enum Option {
 	OUTPUT("the ouput file"),
 	QUALITY("the quality {1..100}"),
 	VERBOSE("enable verbose output"),
-	DEBUG("show debug messages"),
+	DEBUG("show debug messages (imlpies -verbose)"),
 	LOG("also write debug messages to logfile"),;
 	private String description;
 

@@ -11,7 +11,7 @@ public class AdaptiveTriangularTiler implements Tiler {
 
 	@Override
 	public BufferedImage[] tile(BufferedImage image) {
-		// TODO: algorithm to determine triangle splitting 
+		// TODO: FUTURE: algorithm to determine triangle splitting 
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }
