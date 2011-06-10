@@ -8,11 +8,11 @@ package app;
 public enum Opts {
 
 	HELP("display this help message"),
-	INPUT("input file"),
-	OUTPUT("ouput file"),
-	QUALITY("quality of operation"),
-	DEBUG("show debug messages"),
-	VERBOSE("verbose output"),;
+	INPUT("the input file"),
+	OUTPUT("the ouput file"),
+	QUALITY("the quality {1..100}"),
+	VERBOSE("enable verbose output"),
+	DEBUG("show debug messages"),;
 	private String description;
 
 	Opts(String description) {
