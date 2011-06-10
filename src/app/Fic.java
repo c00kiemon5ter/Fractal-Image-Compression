@@ -85,8 +85,10 @@ public class Fic {
 		if (DEBUG) {
 			LOGGER.log(Level.INFO, ":: Initialized task. Starting thread execution..");
 		}
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		executor.execute(task);
+		// FIXME: for now just run the tests
+		//ExecutorService executor = Executors.newSingleThreadExecutor();
+		//executor.execute(task);
+		new TestTask(properties).run();
 	}
 
 	/**
