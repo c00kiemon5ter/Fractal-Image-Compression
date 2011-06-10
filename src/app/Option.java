@@ -5,17 +5,18 @@ package app;
  * 
  * @author c00kiemon5ter
  */
-public enum Opts {
+public enum Option {
 
 	HELP("display this help message"),
-	INPUT("input file"),
-	OUTPUT("ouput file"),
-	QUALITY("quality of operation"),
-	DEBUG("show debug messages"),
-	VERBOSE("verbose output"),;
+	INPUT("the input file"),
+	OUTPUT("the ouput file"),
+	QUALITY("the quality {1..100}"),
+	VERBOSE("enable verbose output"),
+	DEBUG("show debug messages (imlpies -verbose)"),
+	LOG("also write debug messages to logfile"),;
 	private String description;
 
-	Opts(String description) {
+	Option(String description) {
 		this.description = description;
 	}
 

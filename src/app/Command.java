@@ -5,14 +5,14 @@ package app;
  * 
  * @author c00kiemon5ter
  */
-public enum Cmds {
+public enum Command {
 
 	COMPRESS("compress image to file"),
 	DECOMPRESS("decompress file to image"),;
 	public static final String ID = "COMMAND";
 	private String description;
 
-	Cmds(String description) {
+	Command(String description) {
 		this.description = description;
 	}
 

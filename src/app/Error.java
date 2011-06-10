@@ -5,17 +5,17 @@ package app;
  * 
  * @author c00kiemon5ter
  */
-public enum Err {
+public enum Error {
 
 	ARG_COUNT("Unexpected argument count: %d"),
 	UNKNOWN_ARG("Unknown argument: %s"),
 	REQUIRED_ARG_NOT_FOUND("Required argument missing: %s"),
 	MISSING_ARG("Missing argument for option: %s"),
-	QUALITY_FORMAT("Quality argument should by a digit between 1 and 100"),
+	QUALITY_FORMAT("Quality argument should be a digit between 1 and 100"),
 	IMAGE_NOT_FOUND("Couldn't read image: %s"),;
 	private String description;
 
-	Err(String description) {
+	Error(String description) {
 		this.description = String.format("==> ERROR: %s", description);
 	}
 
