@@ -1,22 +1,24 @@
 package app;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+
 import lib.Compressor;
 import lib.Decompressor;
-import lib.comparison.Comparator;
 import lib.comparison.ImageComparator;
 import lib.comparison.Metric;
 import lib.tilers.AdaptiveRectangularTiler;
-import lib.tilers.Tiler;
+import org.im4java.core.IM4JavaException;
 
 /**
  * Command line utility to compress an image using
@@ -30,10 +32,6 @@ public class Fic {
 	 * the system logger
 	 */
 	private static final Logger LOGGER = Logger.getLogger("debugger");
-	/**
-	 * Output control - Verbose and Debug messages
-	 */
-	private static boolean DEBUG, VERBOSE;
 
 	/**
 	 * Do some work, start the app, read the args, validate state and run.
@@ -53,8 +51,10 @@ public class Fic {
 	/** 
 	 * Options from the command line
 	 */
+	private boolean debug, verbose;
 	private double fuzz, quality;
 	private Metric metric;
+	private File inputfile;
 
 	/**
 	 * The fic object is an instance of the application. 
@@ -72,34 +72,34 @@ public class Fic {
 		}};
 	}
 
+	private void compressTask() {
+		if (verbose) {
+			LOGGER.log(Level.INFO, ":: Initializing compress process..");
+		}
+		Compressor compressor = new Compressor();
+		compressor.compress();
+	}
+
+	private void decompressTask() {
+		if (verbose) {
+			LOGGER.log(Level.INFO, ":: Initializing decompress process..");
+		}
+		Decompressor decompressor = new Decompressor();
+		decompressor.decompress();
+	}
+
 	/**
 	 * Run the command with the appropriate options
 	 */
 	private void createAndRunTask() {
-		Runnable task = null;
 		switch (Command.valueOf(properties.getProperty(Command.ID))) {
 			case COMPRESS:
-				if (VERBOSE) {
-					LOGGER.log(Level.INFO, ":: Initializing compress process..");
-				}
-				task = new Compressor();
+				compressTask();
 				break;
 			case DECOMPRESS:
-				if (VERBOSE) {
-					LOGGER.log(Level.INFO, ":: Initializing decompress process..");
-				}
-				task = new Decompressor();
+				decompressTask();
 				break;
 		}
-
-		assert task != null : "==> ERROR[null]: No task initialized";
-		if (DEBUG) {
-			LOGGER.log(Level.INFO, ":: Initialized task. Starting thread execution..");
-		}
-		// FIXME: for now just run the tests
-		//ExecutorService executor = Executors.newSingleThreadExecutor();
-		//executor.execute(task);
-		new TestTask(properties).run();
 	}
 
 	/**
@@ -107,11 +107,11 @@ public class Fic {
 	 */
 	private void validateAndInitProperties() {
 		String validatingfmt = ":: Validating: %s ..";
-		
+
 		// set debug and verbose variables and redirections
-		DEBUG = Boolean.parseBoolean(properties.getProperty(Option.DEBUG.toString()));
-		if (DEBUG) {
-			VERBOSE = true;
+		debug = Boolean.parseBoolean(properties.getProperty(Option.DEBUG.toString()));
+		if (debug) {
+			verbose = true;
 			if (properties.containsKey(Option.LOG)) {
 				String logfile = properties.getProperty(Option.LOG.toString());
 				try {
@@ -123,10 +123,11 @@ public class Fic {
 				}
 			}
 		} else {
-			VERBOSE = Boolean.parseBoolean(properties.getProperty(Option.VERBOSE.toString()));
+			verbose = Boolean.parseBoolean(properties.getProperty(Option.VERBOSE.toString()));
 		}
-		
-		if (DEBUG) {
+
+		// check if a command was provided
+		if (debug) {
 			LOGGER.log(Level.INFO, String.format(validatingfmt, Command.ID));
 		}
 		if (!properties.containsKey(Command.ID)) {
@@ -135,7 +136,8 @@ public class Fic {
 			System.exit(Error.REQUIRED_ARG_NOT_FOUND.errcode());
 		}
 
-		if (DEBUG) {
+		// check input file
+		if (debug) {
 			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.INPUT));
 		}
 		if (!properties.containsKey(Option.INPUT.toString())) {
@@ -143,8 +145,15 @@ public class Fic {
 			System.err.println(Error.REQUIRED_ARG_NOT_FOUND.description(Option.INPUT.option()));
 			System.exit(Error.REQUIRED_ARG_NOT_FOUND.errcode());
 		}
+		inputfile = new File(properties.getProperty(Option.INPUT.toString()));
+		if (!inputfile.exists() || !inputfile.canRead() || !inputfile.isFile()) {
+			usage();
+			System.err.println(Error.FILE_READ.description(inputfile.toString()));
+			System.exit(Error.FILE_READ.errcode());
+		}
 
-		if (DEBUG) {
+		// check metric consistency
+		if (debug) {
 			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.METRIC));
 		}
 		String metricstr = properties.getProperty(Option.METRIC.toString());
@@ -155,8 +164,9 @@ public class Fic {
 			System.err.println(Error.INVALID_VALUE.description(Option.METRIC.option(), metricstr));
 			System.exit(Error.INVALID_VALUE.errcode());
 		}
-		
-		if (DEBUG) {
+
+		// check fuzz consistency
+		if (debug) {
 			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.FUZZ));
 		}
 		String fuzzstr = properties.getProperty(Option.FUZZ.toString());
@@ -168,12 +178,16 @@ public class Fic {
 			System.exit(Error.INVALID_VALUE.errcode());
 		}
 
-		if (DEBUG) {
+		// check quality consistency
+		if (debug) {
 			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.QUALITY));
 		}
 		String qualitystr = properties.getProperty(Option.QUALITY.toString());
 		try {
 			quality = Double.parseDouble(qualitystr);
+			if (quality < 0 || quality > 1) {
+				throw new NumberFormatException();
+			}
 		} catch (NumberFormatException nfe) {
 			usage();
 			System.err.println(Error.INVALID_VALUE.description(Option.QUALITY.option(), qualitystr));

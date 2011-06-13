@@ -12,7 +12,8 @@ public enum Error {
 	REQUIRED_ARG_NOT_FOUND("Required argument missing: %s"),
 	MISSING_ARG("Missing argument for option: %s"),
 	INVALID_VALUE("Invalid value for option: %s %s"),
-	IMAGE_NOT_FOUND("Couldn't read image: %s"),;
+	FILE_READ("Couldn't read file: %s"),
+	IMAGE_READ("Couldn't create image: %s"),;
 	private String description;
 
 	Error(String description) {
