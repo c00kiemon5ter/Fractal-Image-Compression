@@ -1,5 +1,7 @@
 package app;
 
+import lib.comparison.Metric;
+
 /**
  * Representation of available options to the app
  * 
@@ -10,7 +12,18 @@ public enum Option {
 	HELP("display this help message"),
 	INPUT("the input file"),
 	OUTPUT("the ouput file"),
-	QUALITY("the quality {1..100}"),
+	METRIC("the metric to use when comparing images") {
+
+		@Override
+		public String description() {
+			StringBuilder descr = new StringBuilder(super.description).append('(');
+			for (Metric metric : Metric.values()) {
+				descr.append(String.format("%s ", metric.toString()));
+			}
+			return descr.append(')').toString();
+		}
+	},
+	FUZZ("colors within this distance are considered equal"),
 	VERBOSE("enable verbose output"),
 	DEBUG("show debug messages (imlpies -verbose)"),
 	LOG("also write debug messages to logfile"),;

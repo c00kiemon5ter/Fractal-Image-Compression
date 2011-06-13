@@ -11,7 +11,7 @@ public enum Error {
 	UNKNOWN_ARG("Unknown argument: %s"),
 	REQUIRED_ARG_NOT_FOUND("Required argument missing: %s"),
 	MISSING_ARG("Missing argument for option: %s"),
-	QUALITY_FORMAT("Quality argument should be a digit between 1 and 100"),
+	INVALID_VALUE("Invalid value for option: %s %s"),
 	IMAGE_NOT_FOUND("Couldn't read image: %s"),;
 	private String description;
 
@@ -34,6 +34,16 @@ public enum Error {
 	 */
 	public String description(String msg) {
 		return String.format(this.description, msg);
+	}
+	
+	/**
+	 * 
+	 * @param opt specify the option
+	 * @param val value of the option
+	 * @return a description of the error
+	 */
+	public String description(String opt, String val) {
+		return String.format(this.description, opt, val);
 	}
 
 	/**

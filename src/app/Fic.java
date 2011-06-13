@@ -12,6 +12,11 @@ import java.util.logging.Logger;
 
 import lib.Compressor;
 import lib.Decompressor;
+import lib.comparison.Comparator;
+import lib.comparison.ImageComparator;
+import lib.comparison.Metric;
+import lib.tilers.AdaptiveRectangularTiler;
+import lib.tilers.Tiler;
 
 /**
  * Command line utility to compress an image using
@@ -45,6 +50,11 @@ public class Fic {
 	 * the properties table holds the configuration settings
 	 */
 	private Properties properties;
+	/** 
+	 * Options from the command line
+	 */
+	private double fuzz;
+	private Metric metric;
 
 	/**
 	 * The fic object is an instance of the application. 
@@ -54,7 +64,8 @@ public class Fic {
 	public Fic() {
 		this.properties = new Properties() {{
 			setProperty(Option.OUTPUT.toString(), "output.fic");
-			setProperty(Option.QUALITY.toString(), "80");
+			setProperty(Option.METRIC.toString(), "AE");
+			setProperty(Option.FUZZ.toString(), "5");
 			setProperty(Option.VERBOSE.toString(), Boolean.FALSE.toString());
 			setProperty(Option.DEBUG.toString(), Boolean.FALSE.toString());
 		}};
@@ -65,7 +76,6 @@ public class Fic {
 	 */
 	private void createAndRunTask() {
 		Runnable task = null;
-		// TODO: call the lib -- process properties
 		switch (Command.valueOf(properties.getProperty(Command.ID))) {
 			case COMPRESS:
 				if (VERBOSE) {
@@ -118,7 +128,7 @@ public class Fic {
 		if (DEBUG) {
 			LOGGER.log(Level.INFO, String.format(validatingfmt, Command.ID));
 		}
-		if (! properties.containsKey(Command.ID)) {
+		if (!properties.containsKey(Command.ID)) {
 			usage();
 			System.err.println(Error.REQUIRED_ARG_NOT_FOUND.description(Command.ID));
 			System.exit(Error.REQUIRED_ARG_NOT_FOUND.errcode());
@@ -127,22 +137,34 @@ public class Fic {
 		if (DEBUG) {
 			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.INPUT));
 		}
-		if (! properties.containsKey(Option.INPUT)) {
+		if (!properties.containsKey(Option.INPUT.toString())) {
 			usage();
 			System.err.println(Error.REQUIRED_ARG_NOT_FOUND.description(Option.INPUT.option()));
 			System.exit(Error.REQUIRED_ARG_NOT_FOUND.errcode());
 		}
 
 		if (DEBUG) {
-			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.QUALITY));
+			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.METRIC));
 		}
-		String qualitystr = properties.getProperty(Option.QUALITY.toString());
+		String metricstr = properties.getProperty(Option.METRIC.toString());
 		try {
-			Integer.parseInt(qualitystr);
+			metric = Metric.valueOf(metricstr);
+		} catch (IllegalArgumentException iae) {
+			usage();
+			System.err.println(Error.INVALID_VALUE.description(Option.METRIC.option(), metricstr));
+			System.exit(Error.INVALID_VALUE.errcode());
+		}
+		
+		if (DEBUG) {
+			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.FUZZ));
+		}
+		String fuzzstr = properties.getProperty(Option.FUZZ.toString());
+		try {
+			fuzz = Double.parseDouble(fuzzstr);
 		} catch (NumberFormatException nfe) {
 			usage();
-			System.err.println(Error.QUALITY_FORMAT.description(qualitystr));
-			System.exit(Error.QUALITY_FORMAT.errcode());
+			System.err.println(Error.INVALID_VALUE.description(Option.FUZZ.option(), fuzzstr));
+			System.exit(Error.INVALID_VALUE.errcode());
 		}
 	}
 
@@ -183,12 +205,20 @@ public class Fic {
 					System.err.println(Error.MISSING_ARG.description(Option.OUTPUT.option()));
 					System.exit(Error.MISSING_ARG.errcode());
 				}
-			} else if (Option.QUALITY.option().equals(clielement)) {
+			} else if (Option.METRIC.option().equals(clielement)) {
 				if (iterator.hasNext() && (clielement = iterator.next()).charAt(0) != '-') {
-					properties.setProperty(Option.QUALITY.toString(), clielement);
+					properties.setProperty(Option.METRIC.toString(), clielement);
 				} else {
 					usage();
-					System.err.println(Error.MISSING_ARG.description(Option.QUALITY.option()));
+					System.err.println(Error.MISSING_ARG.description(Option.METRIC.option()));
+					System.exit(Error.MISSING_ARG.errcode());
+				}
+			} else if (Option.FUZZ.option().equals(clielement)) {
+				if (iterator.hasNext() && (clielement = iterator.next()).charAt(0) != '-') {
+					properties.setProperty(Option.FUZZ.toString(), clielement);
+				} else {
+					usage();
+					System.err.println(Error.MISSING_ARG.description(Option.FUZZ.option()));
 					System.exit(Error.MISSING_ARG.errcode());
 				}
 			} else if (Option.VERBOSE.option().equals(clielement)) {
