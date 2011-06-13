@@ -48,8 +48,8 @@ public class TestTask implements Runnable {
 		try {
 			this.inputimg = ImageIO.read(inputfile);
 		} catch (IOException ex) {
-			System.err.println(Error.IMAGE_NOT_FOUND.description());
-			System.exit(Error.IMAGE_NOT_FOUND.errcode());
+			System.err.println(Error.IMAGE_READ.description());
+			System.exit(Error.IMAGE_READ.errcode());
 		}
 	}
 
@@ -60,7 +60,7 @@ public class TestTask implements Runnable {
 		//testAdaptRectTilerImg();
 		//testComparison();
 		//testTransformation();
-		compress(inputimg, outputname);
+		//compress(inputimg, outputname);
 	}
 
 	/**
@@ -71,11 +71,11 @@ public class TestTask implements Runnable {
 	private void testRectTiler() {
 		System.out.printf("%s\n start of testRectTiler \n%s\n", sep, sep);
 		Tiler tiler = new RectangularTiler(5, 5);
-		BufferedImage[] blocks = tiler.tile(inputimg);
-		System.out.println(blocks.length);
-		for (int i = 0; i < blocks.length; i++) {
+		ArrayList<BufferedImage> blocks = tiler.tile(inputimg);
+		System.out.println(blocks.size());
+		for (int i = 0; i < blocks.size(); i++) {
 			try {
-				ImageIO.write(blocks[i], "PNG", new File(String.format("tile_block_%d.png", i)));
+				ImageIO.write(blocks.get(i), "PNG", new File(String.format("tile_block_%d.png", i)));
 			} catch (IOException ex) {
 				System.err.printf("Couldn't write image: %d\n", i);
 			}
@@ -91,11 +91,11 @@ public class TestTask implements Runnable {
 	private void testAdaptRectTiler() {
 		System.out.printf("%s\n start of testAdaptRectTiler \n%s\n", sep, sep);
 		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
-		BufferedImage[] blocks = tiler.tile(inputimg);
-		System.out.println(blocks.length);
-		for (int i = 0; i < blocks.length; i++) {
+		ArrayList<BufferedImage> blocks = tiler.tile(inputimg);
+		System.out.println(blocks.size());
+		for (int i = 0; i < blocks.size(); i++) {
 			try {
-				ImageIO.write(blocks[i], "PNG", new File(String.format("tile_block_%d.png", i)));
+				ImageIO.write(blocks.get(i), "PNG", new File(String.format("tile_block_%d.png", i)));
 			} catch (IOException ex) {
 				System.err.printf("Couldn't write image: %d\n", i);
 			}
@@ -111,13 +111,13 @@ public class TestTask implements Runnable {
 	private void testAdaptRectTilerImg() {
 		System.out.printf("%s\n start of testAdaptRectTilerImg \n%s\n", sep, sep);
 		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
-		BufferedImage[] blocks = tiler.tile(inputimg);
+		ArrayList<BufferedImage> blocks = tiler.tile(inputimg);
 		BufferedImage rectimg = new BufferedImage(inputimg.getWidth(), inputimg.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 		Graphics g = rectimg.getGraphics();
 		g.drawImage(inputimg, 0, 0, null);
 		g.setColor(Color.BLACK);
-		int bw = blocks[0].getWidth();
-		int bh = blocks[0].getHeight();
+		int bw = blocks.get(0).getWidth();
+		int bh = blocks.get(0).getHeight();
 		int r = inputimg.getHeight() / bh;
 		int c = inputimg.getWidth() / bw;
 		for (int y = 0; y < r; y++) {
@@ -213,24 +213,24 @@ public class TestTask implements Runnable {
 	 */
 	public void compress(BufferedImage image, String outputfile) {
 		System.out.printf("%s\n start of testCompression \n%s\n", sep, sep);
-		
+
 		// Create range blocks
 		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
-		BufferedImage[] rangeBlocks = tiler.tile(image);
+		ArrayList<BufferedImage> rangeBlocks = tiler.tile(image);
 
 		// Create domain blocks
 		tiler = new AdaptiveRectangularTiler(10, 12);
-		BufferedImage[] domainBlocks = tiler.tile(image);
+		ArrayList<BufferedImage> domainBlocks = tiler.tile(image);
 
 		ArrayList<BufferedImage> transformedRangeBlocks = new ArrayList<BufferedImage>();
-		for (int i = 0; i < rangeBlocks.length; i++) {
-			transformedRangeBlocks.add(rangeBlocks[i]);
-			transformedRangeBlocks.add(ImageTransformer.flip(rangeBlocks[i]));
-			transformedRangeBlocks.add(ImageTransformer.flop(rangeBlocks[i]));
-			transformedRangeBlocks.add(ImageTransformer.shrinkToHalf(rangeBlocks[i]));
-			transformedRangeBlocks.add(ImageTransformer.rotateByQuadrant(rangeBlocks[i], 3));
-			transformedRangeBlocks.add(ImageTransformer.grayScaleImage(rangeBlocks[i]));
-			transformedRangeBlocks.add(ImageTransformer.colorSpaceFilteredImage(rangeBlocks[i], ColorSpace.CS_LINEAR_RGB));
+		for (int i = 0; i < rangeBlocks.size(); i++) {
+			transformedRangeBlocks.add(rangeBlocks.get(i));
+			transformedRangeBlocks.add(ImageTransformer.flip(rangeBlocks.get(i)));
+			transformedRangeBlocks.add(ImageTransformer.flop(rangeBlocks.get(i)));
+			transformedRangeBlocks.add(ImageTransformer.shrinkToHalf(rangeBlocks.get(i)));
+			transformedRangeBlocks.add(ImageTransformer.rotateByQuadrant(rangeBlocks.get(i), 3));
+			transformedRangeBlocks.add(ImageTransformer.grayScaleImage(rangeBlocks.get(i)));
+			transformedRangeBlocks.add(ImageTransformer.colorSpaceFilteredImage(rangeBlocks.get(i), ColorSpace.CS_LINEAR_RGB));
 		}
 
 		ImageComparator comparison = new ImageComparator(Metric.PSNR, 5.2D);
@@ -238,31 +238,31 @@ public class TestTask implements Runnable {
 		//contains all similarities between domain blocks and transformed range blocks
 		List similarities = new ArrayList<Entry<BufferedImage, BufferedImage>>();
 
-		for (int i = 0; i < domainBlocks.length; i++) {
+		for (int i = 0; i < domainBlocks.size(); i++) {
 
 			//contains all similarities between domainBlocks[i] and transformed range blocks
-			List rangeSimilarities = new ArrayList<Entry<BufferedImage, Float>>();
+			List<Entry<BufferedImage, Float>> rangeSimilarities = new ArrayList<Entry<BufferedImage, Float>>();
 
 			for (int j = 0; j < transformedRangeBlocks.size(); j++) {
 				//Compare each domain block with each transformed range block (problem cause of different sizes of the compared blocks) 
 				//and add the most similar one's to a hashmap along with their similarity
-                /*try { 
-				if (comparison.compare(domainBlocks[i], transformedRangeBlocks.get(j))) { 
-				System.out.printf("Images match: %s\n", comparison.getDifference());
-				//add to transformations that match domainBlocks[i] 
-				rangeSimilarities.add(new SimpleEntry<BufferedImage, Float>(transformedRangeBlocks.get(j), 0.5F)); 
-				//^ comparison's difference should be a float from 0 to 1. Temporarily added 0.5F
-				} else {
-				System.out.printf("Images differ: %s\n", comparison.getDifference());
-				//ignore it
-				} 
-				} catch (IOException ex) {
-				System.err.printf("Couldn't run op: compare ioe\n");
-				} catch (InterruptedException ex) {
-				System.err.printf("Couldn't run op: compare ie\n");
-				} catch (IM4JavaException ex) {
-				System.err.printf("Couldn't run op: compare im4jve\n");
-				} */
+//                try { 
+//				if (comparison.compare(domainBlocks[i], transformedRangeBlocks.get(j))) { 
+//				System.out.printf("Images match: %s\n", comparison.getDifference());
+//				//add to transformations that match domainBlocks[i] 
+//				rangeSimilarities.add(new SimpleEntry<BufferedImage, Float>(transformedRangeBlocks.get(j), 0.5F)); 
+//				//^ comparison's difference should be a float from 0 to 1. Temporarily added 0.5F
+//				} else {
+//				System.out.printf("Images differ: %s\n", comparison.getDifference());
+//				//ignore it
+//				} 
+//				} catch (IOException ex) {
+//				System.err.printf("Couldn't run op: compare ioe\n");
+//				} catch (InterruptedException ex) {
+//				System.err.printf("Couldn't run op: compare ie\n");
+//				} catch (IM4JavaException ex) {
+//				System.err.printf("Couldn't run op: compare im4jve\n");
+//				}
 			}
 
 			Collections.sort(rangeSimilarities, new Comparator<Entry<BufferedImage, Float>>() {
@@ -274,10 +274,10 @@ public class TestTask implements Runnable {
 			});
 
 			//add top two similar images
-			similarities.add(new SimpleEntry<BufferedImage, BufferedImage>(domainBlocks[i], (BufferedImage) ((SimpleEntry) rangeSimilarities.get(0)).getKey()));
-			similarities.add(new SimpleEntry<BufferedImage, BufferedImage>(domainBlocks[i], (BufferedImage) ((SimpleEntry) rangeSimilarities.get(1)).getKey()));
-			
-		System.out.printf("%s\n end of testCompression\n%s\n", sep, sep);
+//			similarities.add(new SimpleEntry<BufferedImage, BufferedImage>(domainBlocks[i], (BufferedImage) ((SimpleEntry) rangeSimilarities.get(0)).getKey()));
+//			similarities.add(new SimpleEntry<BufferedImage, BufferedImage>(domainBlocks[i], (BufferedImage) ((SimpleEntry) rangeSimilarities.get(1)).getKey()));
+
+			System.out.printf("%s\n end of testCompression\n%s\n", sep, sep);
 		}
 	}
 }
