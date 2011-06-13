@@ -58,10 +58,7 @@ public class ImageComparator implements Comparator {
 		return this.metric.equalval().equals(this.difference);
 	}
 
-	/**
-	 * 
-	 * @return the difference between the two images
-	 */
+	@Override
 	public String getDifference() {
 		return this.difference;
 	}

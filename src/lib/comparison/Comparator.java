@@ -14,7 +14,7 @@ import org.im4java.core.IM4JavaException;
  * @see Comparison.Metric
  * @see Comparison
  */
-interface Comparator {
+public interface Comparator {
 
 	/**
 	 * compare the given images 
@@ -28,4 +28,10 @@ interface Comparator {
 	 */
 	public boolean compare(BufferedImage imageA, BufferedImage imageB)
 			throws IOException, InterruptedException, IM4JavaException;
+
+	/**
+	 *
+	 * @return the difference between the two images
+	 */
+	public String getDifference();
 }
