@@ -76,8 +76,24 @@ public class Fic {
 		if (verbose) {
 			LOGGER.log(Level.INFO, ":: Initializing compress process..");
 		}
-		Compressor compressor = new Compressor();
-		compressor.compress();
+		BufferedImage image;
+		try {
+			image = ImageIO.read(inputfile);
+			int xpixels = (int) (image.getWidth() - image.getWidth() * quality) + 1;
+			int ypixels = (int) (image.getHeight() - image.getHeight() * quality) + 1;
+			Compressor compressor = new Compressor(new AdaptiveRectangularTiler(xpixels / 10, ypixels / 10),
+												   new AdaptiveRectangularTiler(ypixels, ypixels),
+												   new ImageComparator(metric, fuzz));
+			try {
+				compressor.compress(image);
+			} catch (InterruptedException ex) {
+			} catch (IM4JavaException ex) {
+			}
+		} catch (IOException ex) {
+			usage();
+			System.err.println(Error.IMAGE_READ.description(inputfile.toString()));
+			System.exit(Error.IMAGE_READ.errcode());
+		}
 	}
 
 	private void decompressTask() {

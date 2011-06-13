@@ -3,17 +3,12 @@ package lib;
 /**
  * 
  */
-public class Decompressor implements Runnable {
+public class Decompressor {
 
 	public Decompressor() {
 	}
 
-	@Override
-	public void run() {
-		decompress();
-	}
-
-	private void decompress() {
+	public void decompress() {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 }
