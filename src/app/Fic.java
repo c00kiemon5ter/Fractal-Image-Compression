@@ -43,7 +43,7 @@ public class Fic {
 	public static void main(String[] args) {
 		Fic fic = new Fic();
 		fic.parseCli(args);
-		fic.validateProperties();
+		fic.validateAndInitProperties();
 		fic.createAndRunTask();
 	}
 	/**
@@ -53,7 +53,7 @@ public class Fic {
 	/** 
 	 * Options from the command line
 	 */
-	private double fuzz;
+	private double fuzz, quality;
 	private Metric metric;
 
 	/**
@@ -66,6 +66,7 @@ public class Fic {
 			setProperty(Option.OUTPUT.toString(), "output.fic");
 			setProperty(Option.METRIC.toString(), "AE");
 			setProperty(Option.FUZZ.toString(), "5");
+			setProperty(Option.QUALITY.toString(), "0.9");
 			setProperty(Option.VERBOSE.toString(), Boolean.FALSE.toString());
 			setProperty(Option.DEBUG.toString(), Boolean.FALSE.toString());
 		}};
@@ -104,7 +105,7 @@ public class Fic {
 	/**
 	 * Validate properties attributes
 	 */
-	private void validateProperties() {
+	private void validateAndInitProperties() {
 		String validatingfmt = ":: Validating: %s ..";
 		
 		// set debug and verbose variables and redirections
@@ -166,6 +167,18 @@ public class Fic {
 			System.err.println(Error.INVALID_VALUE.description(Option.FUZZ.option(), fuzzstr));
 			System.exit(Error.INVALID_VALUE.errcode());
 		}
+
+		if (DEBUG) {
+			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.QUALITY));
+		}
+		String qualitystr = properties.getProperty(Option.QUALITY.toString());
+		try {
+			quality = Double.parseDouble(qualitystr);
+		} catch (NumberFormatException nfe) {
+			usage();
+			System.err.println(Error.INVALID_VALUE.description(Option.QUALITY.option(), qualitystr));
+			System.exit(Error.INVALID_VALUE.errcode());
+		}
 	}
 
 	/**
@@ -219,6 +232,14 @@ public class Fic {
 				} else {
 					usage();
 					System.err.println(Error.MISSING_ARG.description(Option.FUZZ.option()));
+					System.exit(Error.MISSING_ARG.errcode());
+				}
+			} else if (Option.QUALITY.option().equals(clielement)) {
+				if (iterator.hasNext() && (clielement = iterator.next()).charAt(0) != '-') {
+					properties.setProperty(Option.QUALITY.toString(), clielement);
+				} else {
+					usage();
+					System.err.println(Error.MISSING_ARG.description(Option.QUALITY.option()));
 					System.exit(Error.MISSING_ARG.errcode());
 				}
 			} else if (Option.VERBOSE.option().equals(clielement)) {

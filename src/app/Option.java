@@ -24,6 +24,7 @@ public enum Option {
 		}
 	},
 	FUZZ("colors within this distance are considered equal"),
+	QUALITY("the quality of the generated image {0..1}"),
 	VERBOSE("enable verbose output"),
 	DEBUG("show debug messages (imlpies -verbose)"),
 	LOG("also write debug messages to logfile"),;
