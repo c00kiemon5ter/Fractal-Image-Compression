@@ -95,11 +95,14 @@ public class Fic {
 	 * Validate properties attributes
 	 */
 	private void validateProperties() {
+		String validatingfmt = ":: Validating: %s ..";
+		
+		// set debug and verbose variables and redirections
 		DEBUG = Boolean.parseBoolean(properties.getProperty(Option.DEBUG.toString()));
 		if (DEBUG) {
 			VERBOSE = true;
-			String logfile = properties.getProperty(Option.LOG.toString());
-			if (logfile != null) {
+			if (properties.containsKey(Option.LOG)) {
+				String logfile = properties.getProperty(Option.LOG.toString());
 				try {
 					LOGGER.addHandler(new FileHandler(logfile));
 				} catch (IOException ex) {
@@ -113,25 +116,25 @@ public class Fic {
 		}
 		
 		if (DEBUG) {
-			LOGGER.log(Level.INFO, String.format(":: Validating: %s ..", Command.ID));
+			LOGGER.log(Level.INFO, String.format(validatingfmt, Command.ID));
 		}
-		if (properties.getProperty(Command.ID) == null) {
+		if (! properties.containsKey(Command.ID)) {
 			usage();
 			System.err.println(Error.REQUIRED_ARG_NOT_FOUND.description(Command.ID));
 			System.exit(Error.REQUIRED_ARG_NOT_FOUND.errcode());
 		}
 
 		if (DEBUG) {
-			LOGGER.log(Level.INFO, String.format(":: Validating: %s ..", Option.INPUT));
+			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.INPUT));
 		}
-		if (properties.getProperty(Option.INPUT.toString()) == null) {
+		if (! properties.containsKey(Option.INPUT)) {
 			usage();
 			System.err.println(Error.REQUIRED_ARG_NOT_FOUND.description(Option.INPUT.option()));
 			System.exit(Error.REQUIRED_ARG_NOT_FOUND.errcode());
 		}
 
 		if (DEBUG) {
-			LOGGER.log(Level.INFO, String.format(":: Validating: %s ..", Option.QUALITY));
+			LOGGER.log(Level.INFO, String.format(validatingfmt, Option.QUALITY));
 		}
 		String qualitystr = properties.getProperty(Option.QUALITY.toString());
 		try {
