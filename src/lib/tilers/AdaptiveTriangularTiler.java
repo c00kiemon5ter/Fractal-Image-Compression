@@ -1,6 +1,7 @@
 package lib.tilers;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 /**
  * Adaptive tiler finds its way on how to tile and split
@@ -10,7 +11,7 @@ import java.awt.image.BufferedImage;
 public class AdaptiveTriangularTiler implements Tiler {
 
 	@Override
-	public BufferedImage[] tile(BufferedImage image) {
+	public ArrayList<BufferedImage> tile(BufferedImage image) {
 		// TODO: FUTURE: algorithm to determine triangle splitting 
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

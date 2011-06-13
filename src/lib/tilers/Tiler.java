@@ -1,6 +1,7 @@
 package lib.tilers;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 /**
  * Tiler interface any kind of tiler should implement
@@ -13,5 +14,5 @@ public interface Tiler {
 	 * @param image the image to tile or split
 	 * @return an array holding the split images
 	 */
-	public BufferedImage[] tile(BufferedImage image);
+	public ArrayList<BufferedImage> tile(BufferedImage image);
 }

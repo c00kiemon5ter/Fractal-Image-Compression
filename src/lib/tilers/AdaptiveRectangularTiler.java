@@ -2,6 +2,7 @@ package lib.tilers;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 /**
  * Adaptive tiler finds its way on how to tile and split
@@ -24,22 +25,24 @@ public class AdaptiveRectangularTiler implements Tiler {
 	}
 
 	@Override
-	public BufferedImage[] tile(BufferedImage image) {
+	public ArrayList<BufferedImage> tile(BufferedImage image) {
 		Point coord = adjustColsRows(image, rows, cols);
 		this.rows = coord.x;
 		this.cols = coord.y;
 		int blockheight = image.getHeight() / rows;
 		int blockwidth = image.getWidth() / cols;
-		BufferedImage[] blocks = new BufferedImage[rows * cols];
+//		BufferedImage[] blocks = new BufferedImage[rows * cols];
+		ArrayList<BufferedImage> blockslist = new ArrayList<BufferedImage>(rows * cols);
 		for (int y = 0; y < rows; y++) {
 			for (int x = 0; x < cols; x++) {
-				blocks[y * cols + x] = image.getSubimage(x * blockwidth,
-														 y * blockheight,
-														 blockwidth,
-														 blockheight);
+//				blocks[y * cols + x] = image.getSubimage(blockwidth * x, blockheight * y,
+//														 blockwidth, blockheight);
+				blockslist.add(image.getSubimage(blockwidth * x, blockheight * y,
+												 blockwidth, blockheight));
 			}
 		}
-		return blocks;
+//		return blocks;
+		return blockslist;
 	}
 
 	/**
