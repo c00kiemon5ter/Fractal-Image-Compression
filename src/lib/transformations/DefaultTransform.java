@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 /**
  * Default transformations
  */
-public enum DefaultTransforms implements Transformer<BufferedImage> {
+public enum DefaultTransform implements Transformer<BufferedImage> {
 
 	FLIP {
 
