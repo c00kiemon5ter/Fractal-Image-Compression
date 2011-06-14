@@ -29,8 +29,6 @@ import lib.transformations.ScaleTransform;
 /**
  * Command line utility to compress an image using
  * fractal image compression methods. 
- * 
- * @author c00kiemon5ter
  */
 public class Fic {
 

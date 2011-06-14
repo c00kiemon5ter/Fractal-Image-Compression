@@ -2,8 +2,6 @@ package app;
 
 /**
  * Representation of possible errors coupled with error codes
- * 
- * @author c00kiemon5ter
  */
 public enum Error {
 

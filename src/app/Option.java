@@ -4,8 +4,6 @@ import lib.comparison.Metric;
 
 /**
  * Representation of available options to the app
- * 
- * @author c00kiemon5ter
  */
 public enum Option {
 

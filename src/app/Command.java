@@ -2,8 +2,6 @@ package app;
 
 /**
  * Representation of the commands available to the app.
- * 
- * @author c00kiemon5ter
  */
 public enum Command {
 
