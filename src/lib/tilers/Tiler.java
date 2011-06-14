@@ -1,18 +1,14 @@
 package lib.tilers;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-/**
- * Tiler interface any kind of tiler should implement
- */
-public interface Tiler {
+public interface Tiler<T> {
 
 	/**
-	 * Tile the given image according to the chosen tiler
+	 * Tile the given object according
 	 * 
-	 * @param image the image to tile or split
-	 * @return an array holding the split images
+	 * @param t the object to tile
+	 * @return an array list holding the tiles of the object
 	 */
-	public ArrayList<BufferedImage> tile(BufferedImage image);
+	public ArrayList<T> tile(T t);
 }

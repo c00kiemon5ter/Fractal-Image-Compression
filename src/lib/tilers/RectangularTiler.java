@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Rectangle tiler. Given the rows and columns, it
  * splits the image into rows x columns rectangles. 
  */
-public class RectangularTiler implements Tiler {
+public class RectangularTiler implements Tiler<BufferedImage> {
 
 	private int rows, cols;
 

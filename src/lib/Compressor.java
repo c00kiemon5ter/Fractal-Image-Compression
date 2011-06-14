@@ -2,7 +2,7 @@ package lib;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import lib.comparison.ImageComparator;
+import java.util.Comparator;
 import lib.tilers.Tiler;
 import java.util.Set;
 import lib.transformations.ImageTransform;
@@ -13,11 +13,12 @@ import lib.transformations.ImageTransform;
  */
 public class Compressor {
 
-	private Tiler rangeTiler, domainTiler;
-	private ImageComparator comparator;
+	private Tiler<BufferedImage> rangeTiler, domainTiler;
+	private Comparator<BufferedImage> comparator;
 	private Set<ImageTransform> transforms;
 
-	public Compressor(Tiler rangeTiler, Tiler domainTiler, ImageComparator comparator, Set<ImageTransform> transforms) {
+	public Compressor(Tiler<BufferedImage> rangeTiler, Tiler<BufferedImage> domainTiler,
+					  Comparator<BufferedImage> comparator, Set<ImageTransform> transforms) {
 		this.rangeTiler = rangeTiler;
 		this.domainTiler = domainTiler;
 		this.comparator = comparator;

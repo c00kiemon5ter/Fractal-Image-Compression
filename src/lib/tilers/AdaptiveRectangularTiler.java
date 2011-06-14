@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * the given image. It will determine the best number of
  * rows and columns in which to split the image.
  */
-public class AdaptiveRectangularTiler implements Tiler {
+public class AdaptiveRectangularTiler implements Tiler<BufferedImage> {
 
 	private int rows, cols;
 

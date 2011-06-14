@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * the given image. It will determine the best (best effort)
  * way to split the image in triangles.
  */
-public class AdaptiveTriangularTiler implements Tiler {
+public class AdaptiveTriangularTiler implements Tiler<BufferedImage> {
 
 	@Override
 	public ArrayList<BufferedImage> tile(BufferedImage image) {
