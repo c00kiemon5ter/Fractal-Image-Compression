@@ -10,13 +10,12 @@ import lib.tilers.AdaptiveRectangularTiler;
 
 import lib.comparison.ImageComparator;
 import lib.comparison.Metric;
-import lib.transformations.ImageTransformer;
+import lib.transformations.ImageTransform;
 
 import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,7 +29,6 @@ import org.im4java.core.IM4JavaException;
  * Test cases
  * 
  * TODO:
- *	fix (de)compressor interface/constructor
  *	fix tilers to pixel args
  *	native compare images
  */
@@ -70,7 +68,7 @@ public class TestTask implements Runnable {
 	 */
 	private void testRectTiler() {
 		System.out.printf("%s\n start of testRectTiler \n%s\n", sep, sep);
-		Tiler tiler = new RectangularTiler(5, 5);
+		Tiler<BufferedImage> tiler = new RectangularTiler(5, 5);
 		ArrayList<BufferedImage> blocks = tiler.tile(inputimg);
 		System.out.println(blocks.size());
 		for (int i = 0; i < blocks.size(); i++) {
@@ -90,7 +88,7 @@ public class TestTask implements Runnable {
 	 */
 	private void testAdaptRectTiler() {
 		System.out.printf("%s\n start of testAdaptRectTiler \n%s\n", sep, sep);
-		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
+		Tiler<BufferedImage> tiler = new AdaptiveRectangularTiler(5, 6);
 		ArrayList<BufferedImage> blocks = tiler.tile(inputimg);
 		System.out.println(blocks.size());
 		for (int i = 0; i < blocks.size(); i++) {
@@ -110,7 +108,7 @@ public class TestTask implements Runnable {
 	 */
 	private void testAdaptRectTilerImg() {
 		System.out.printf("%s\n start of testAdaptRectTilerImg \n%s\n", sep, sep);
-		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
+		Tiler<BufferedImage> tiler = new AdaptiveRectangularTiler(5, 6);
 		ArrayList<BufferedImage> blocks = tiler.tile(inputimg);
 		BufferedImage rectimg = new BufferedImage(inputimg.getWidth(), inputimg.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 		Graphics g = rectimg.getGraphics();
@@ -139,50 +137,50 @@ public class TestTask implements Runnable {
 	 * 
 	 * @see ImageComparator
 	 */
-	private void testComparison() {
-		System.out.printf("%s\n start of testComparison \n%s\n", sep, sep);
-		ImageComparator comparison = new ImageComparator(Metric.PSNR, 5.2D);
-		try {
-			if (comparison.compare(inputimg, inputimg)) {
-				System.out.printf("Images match: %s\n", comparison.getDifference());
-			} else {
-				System.out.printf("Images differ: %s\n", comparison.getDifference());
-			}
-		} catch (IOException ex) {
-			System.err.printf("Couldn't run op: compare ioe\n");
-		} catch (InterruptedException ex) {
-			System.err.printf("Couldn't run op: compare ie\n");
-		} catch (IM4JavaException ex) {
-			System.err.printf("Couldn't run op: compare im4jve\n");
-		}
-		if (properties.getProperty(Option.VERBOSE.toString()) != null) {
-			System.out.println("== out stream ==");
-			for (String line : comparison.getStdout()) {
-				System.out.println(line);
-			}
-			System.err.println("\n== error stream ==");
-			for (String line : comparison.getStderr()) {
-				System.err.println(line);
-			}
-		}
-		System.out.printf("%s\n end of testComparison \n%s\n", sep, sep);
-	}
+//	private void testComparison() {
+//		System.out.printf("%s\n start of testComparison \n%s\n", sep, sep);
+//		ImageComparator comparison = new ImageComparator(Metric.PSNR, 5.2D);
+//		try {
+//			if (comparison.compare(inputimg, inputimg)) {
+//				System.out.printf("Images match: %s\n", comparison.getDifference());
+//			} else {
+//				System.out.printf("Images differ: %s\n", comparison.getDifference());
+//			}
+//		} catch (IOException ex) {
+//			System.err.printf("Couldn't run op: compare ioe\n");
+//		} catch (InterruptedException ex) {
+//			System.err.printf("Couldn't run op: compare ie\n");
+//		} catch (IM4JavaException ex) {
+//			System.err.printf("Couldn't run op: compare im4jve\n");
+//		}
+//		if (properties.getProperty(Option.VERBOSE.toString()) != null) {
+//			System.out.println("== out stream ==");
+//			for (String line : comparison.getStdout()) {
+//				System.out.println(line);
+//			}
+//			System.err.println("\n== error stream ==");
+//			for (String line : comparison.getStderr()) {
+//				System.err.println(line);
+//			}
+//		}
+//		System.out.printf("%s\n end of testComparison \n%s\n", sep, sep);
+//	}
 
 	/**
 	 * Test the transformation of images
 	 * 
-	 * @see ImageTransformer
+	 * @see ImageTransform
 	 */
 	private void testTransformation() {
 		System.out.printf("%s\n start of testAffineTransformation \n%s\n", sep, sep);
 		Long start = System.currentTimeMillis();
-		BufferedImage flip = ImageTransformer.flip(inputimg);
-		BufferedImage flop = ImageTransformer.flop(inputimg);
-		BufferedImage shri = ImageTransformer.shrinkToHalf(inputimg);
-		BufferedImage qrot = ImageTransformer.rotateByQuadrant(inputimg, 3);
-		BufferedImage drot = ImageTransformer.rotateByDegrees(inputimg, 60);
-		BufferedImage gray = ImageTransformer.grayScaleImage(inputimg);
-		BufferedImage filt = ImageTransformer.colorSpaceFilteredImage(inputimg, ColorSpace.CS_LINEAR_RGB);
+		BufferedImage flip = ImageTransform.flip(inputimg);
+		BufferedImage flop = ImageTransform.flop(inputimg);
+		BufferedImage shri = ImageTransform.shrinkToHalf(inputimg);
+		BufferedImage qrot = ImageTransform.rotateByQuadrants(inputimg, 3);
+		BufferedImage drot = ImageTransform.rotateByDegrees(inputimg, 60);
+		BufferedImage gray = ImageTransform.grayScaleImage(inputimg);
+		BufferedImage filt = ImageTransform.colorSpaceFilteredImage(inputimg, ColorSpace.CS_LINEAR_RGB);
 		System.out.printf(":: Affine operations took %dms\n", System.currentTimeMillis() - start);
 		try {
 			System.out.println("FLIP");
@@ -215,7 +213,7 @@ public class TestTask implements Runnable {
 		System.out.printf("%s\n start of testCompression \n%s\n", sep, sep);
 
 		// Create range blocks
-		Tiler tiler = new AdaptiveRectangularTiler(5, 6);
+		Tiler<BufferedImage> tiler = new AdaptiveRectangularTiler(5, 6);
 		ArrayList<BufferedImage> rangeBlocks = tiler.tile(image);
 
 		// Create domain blocks
@@ -225,12 +223,12 @@ public class TestTask implements Runnable {
 		ArrayList<BufferedImage> transformedRangeBlocks = new ArrayList<BufferedImage>();
 		for (int i = 0; i < rangeBlocks.size(); i++) {
 			transformedRangeBlocks.add(rangeBlocks.get(i));
-			transformedRangeBlocks.add(ImageTransformer.flip(rangeBlocks.get(i)));
-			transformedRangeBlocks.add(ImageTransformer.flop(rangeBlocks.get(i)));
-			transformedRangeBlocks.add(ImageTransformer.shrinkToHalf(rangeBlocks.get(i)));
-			transformedRangeBlocks.add(ImageTransformer.rotateByQuadrant(rangeBlocks.get(i), 3));
-			transformedRangeBlocks.add(ImageTransformer.grayScaleImage(rangeBlocks.get(i)));
-			transformedRangeBlocks.add(ImageTransformer.colorSpaceFilteredImage(rangeBlocks.get(i), ColorSpace.CS_LINEAR_RGB));
+			transformedRangeBlocks.add(ImageTransform.flip(rangeBlocks.get(i)));
+			transformedRangeBlocks.add(ImageTransform.flop(rangeBlocks.get(i)));
+			transformedRangeBlocks.add(ImageTransform.shrinkToHalf(rangeBlocks.get(i)));
+			transformedRangeBlocks.add(ImageTransform.rotateByQuadrants(rangeBlocks.get(i), 3));
+			transformedRangeBlocks.add(ImageTransform.grayScaleImage(rangeBlocks.get(i)));
+			transformedRangeBlocks.add(ImageTransform.colorSpaceFilteredImage(rangeBlocks.get(i), ColorSpace.CS_LINEAR_RGB));
 		}
 
 		ImageComparator comparison = new ImageComparator(Metric.PSNR, 5.2D);
