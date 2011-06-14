@@ -1,8 +1,9 @@
 package lib.comparison;
 
-import java.util.ArrayList;
 import java.io.IOException;
+import java.util.Comparator;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import org.im4java.core.IM4JavaException;
 import org.im4java.core.IMOperation;
@@ -14,7 +15,7 @@ import org.im4java.process.ArrayListOutputConsumer;
  * 
  * @see http://www.imagemagick.org/Usage/compare/
  */
-public class ImageComparator implements Comparator {
+public class ImageComparator implements Comparator<BufferedImage> {
 
 	private IMOperation operation;
 	private ArrayListOutputConsumer stdout;
@@ -50,15 +51,13 @@ public class ImageComparator implements Comparator {
 		}};
 	}
 
-	@Override
-	public boolean compare(final BufferedImage imageA, final BufferedImage imageB)
+	public boolean isEqual(final BufferedImage imageA, final BufferedImage imageB)
 			throws IOException, InterruptedException, IM4JavaException {
 		command.run(operation, imageA, imageB);
 		this.difference = command.getErrorText().get(command.getErrorText().size() - 1).split("\\s+")[0];
 		return this.metric.equalval().equals(this.difference);
 	}
 
-	@Override
 	public String getDifference() {
 		return this.difference;
 	}
@@ -77,5 +76,11 @@ public class ImageComparator implements Comparator {
 	 */
 	public ArrayList<String> getStderr() {
 		return command.getErrorText();
+	}
+
+	// TODO: compare images
+	@Override
+	public int compare(BufferedImage imageA, BufferedImage imageB) {
+		return 0;
 	}
 }
