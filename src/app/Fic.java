@@ -2,6 +2,8 @@ package app;
 
 import java.util.Arrays;
 import java.util.ListIterator;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -18,7 +20,11 @@ import lib.Decompressor;
 import lib.comparison.ImageComparator;
 import lib.comparison.Metric;
 import lib.tilers.AdaptiveRectangularTiler;
-import org.im4java.core.IM4JavaException;
+import lib.transformations.FlipTransform;
+import lib.transformations.FlopTransform;
+import lib.transformations.ImageTransform;
+import lib.transformations.RotateQuadrantsTransform;
+import lib.transformations.ScaleTransform;
 
 /**
  * Command line utility to compress an image using
@@ -44,6 +50,7 @@ public class Fic {
 		fic.validateAndInitProperties();
 		fic.createAndRunTask();
 	}
+
 	/**
 	 * the properties table holds the configuration settings
 	 */
@@ -81,14 +88,18 @@ public class Fic {
 			image = ImageIO.read(inputfile);
 			int xpixels = (int) (image.getWidth() - image.getWidth() * quality) + 1;
 			int ypixels = (int) (image.getHeight() - image.getHeight() * quality) + 1;
+			Set<ImageTransform> transforms = new HashSet<ImageTransform>() {{
+				add(new FlipTransform());
+				add(new FlopTransform());
+				add(new ScaleTransform(0.5, 0.5));
+				add(new RotateQuadrantsTransform(1));
+				add(new RotateQuadrantsTransform(2));
+				add(new RotateQuadrantsTransform(3));
+			}};
 			Compressor compressor = new Compressor(new AdaptiveRectangularTiler(xpixels / 10, ypixels / 10),
 												   new AdaptiveRectangularTiler(ypixels, ypixels),
-												   new ImageComparator(metric, fuzz));
-			try {
-				compressor.compress(image);
-			} catch (InterruptedException ex) {
-			} catch (IM4JavaException ex) {
-			}
+												   new ImageComparator(metric, fuzz), transforms);
+			compressor.compress(image);
 		} catch (IOException ex) {
 			usage();
 			System.err.println(Error.IMAGE_READ.description(inputfile.toString()));
@@ -119,7 +130,7 @@ public class Fic {
 	}
 
 	/**
-	 * Validate properties attributes
+	 * Validate properties attributes and init variables
 	 */
 	private void validateAndInitProperties() {
 		String validatingfmt = ":: Validating: %s ..";
