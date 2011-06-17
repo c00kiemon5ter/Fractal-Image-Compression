@@ -1,11 +1,8 @@
 package lib.transformations;
 
-import java.awt.Graphics;
-import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 
 /**
  * Produces transformed copies of a given input image.
@@ -34,63 +31,5 @@ public abstract class ImageTransform implements Transformer<BufferedImage> {
 	 */
 	public static BufferedImage affineTransform(final BufferedImage inputimage, final AffineTransform transform, final int interpolationType) {
 		return new AffineTransformOp(transform, interpolationType).filter(inputimage, null);
-	}
-
-	public static BufferedImage affineTransform(final BufferedImage inputimage, final AffineTransform transform) {
-		return affineTransform(inputimage, transform, AffineTransformOp.TYPE_BILINEAR);
-	}
-
-	public static BufferedImage flip(final BufferedImage inputimage) {
-		AffineTransform transform = new AffineTransform();
-		transform.translate(inputimage.getWidth() / 2, inputimage.getHeight() / 2);
-		transform.scale(1, -1);
-		transform.translate(-inputimage.getWidth() / 2, -inputimage.getHeight() / 2);
-		return affineTransform(inputimage, transform);
-	}
-
-	public static BufferedImage flop(final BufferedImage inputimage) {
-		AffineTransform transform = new AffineTransform();
-		transform.translate(inputimage.getWidth() / 2, inputimage.getHeight() / 2);
-		transform.scale(-1, 1);
-		transform.translate(-inputimage.getWidth() / 2, -inputimage.getHeight() / 2);
-		return affineTransform(inputimage, transform);
-	}
-
-	public static BufferedImage shrinkToHalf(final BufferedImage inputimage) {
-		return scale(inputimage, .5, .5);
-	}
-
-	public static BufferedImage scale(final BufferedImage inputimage, final double scalex, final double scaley) {
-		return affineTransform(inputimage, AffineTransform.getScaleInstance(scalex, scaley));
-	}
-
-	public static BufferedImage shear(final BufferedImage inputimage, final double shearx, final double sheary) {
-		return affineTransform(inputimage, AffineTransform.getShearInstance(shearx, sheary));
-	}
-
-	public static BufferedImage rotateByDegrees(final BufferedImage inputimage, final double degrees) {
-		return affineTransform(inputimage, AffineTransform.getRotateInstance(Math.toRadians(degrees),
-																			 inputimage.getWidth() / 2,
-																			 inputimage.getHeight() / 2));
-	}
-
-	public static BufferedImage rotateByQuadrants(final BufferedImage inputimage, final int quadrantants) {
-		return affineTransform(inputimage, AffineTransform.getQuadrantRotateInstance(quadrantants,
-																					 inputimage.getWidth() / 2,
-																					 inputimage.getHeight() / 2));
-	}
-
-	public static BufferedImage grayScaleImage(final BufferedImage inputimage) {
-		BufferedImage grayImg = new BufferedImage(inputimage.getWidth(),
-												  inputimage.getHeight(),
-												  BufferedImage.TYPE_BYTE_GRAY);
-		Graphics g = grayImg.getGraphics();
-		g.drawImage(inputimage, 0, 0, null);
-		g.dispose();
-		return grayImg;
-	}
-
-	public static BufferedImage colorSpaceFilteredImage(final BufferedImage inputimage, final int colorspace) {
-		return new ColorConvertOp(ColorSpace.getInstance(colorspace), null).filter(inputimage, null);
 	}
 }
