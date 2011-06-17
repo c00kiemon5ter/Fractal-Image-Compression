@@ -10,29 +10,41 @@ are saved. Once an image has been converted into fractal code, the image can be
 recreated to fill any screen size without the loss of sharpness that occurs in
 conventional compression schemes.
 
-Analysis
---------
+Notes
+-----
 
-### Image Analysis
-- read image
-- uncompress, strip headers, keep raw
+* compression:
 
-### Block Analysis
-- split into NxM blocks
-- compare blocks and discover similarities
-  * similarity depends on the *quality* factor
+  - read image
+  - split into NxM range and domain blocks
+  - compare range with domain blocks
+  - store most similar blocks along with transformations applied
 
-### Fractal Analysis
-- similar blocks construct a pattern space
-- produce a fractal function from the pattern space
+    * similar blocks construct a pattern space
+    * produce a fractal model from the pattern space
 
+  - store the matched image with the position it draws
 
-Optimizations
--------------
+* optimizations
 
--   negate image  
-    limit color space and color diffs
--   monochrome image  
-    store color information separately  
+  - limit color space
+    store color information separately
     similarity doesn't care about color
+
+    * negate image
+    * monochrome image
+    * grayscale image
+
+
+  - scale down images before comparing
+    less pixel-by-pixel compares
+
+  - classify images
+    edges
+    color space
+    histogram
+
+  - perceptual hash algorithms
+    compare phashes only
+    check under a thresold value (quality?)
 
