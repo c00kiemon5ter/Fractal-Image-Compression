@@ -31,17 +31,13 @@ public class AdaptiveRectangularTiler implements Tiler<BufferedImage> {
 		this.cols = coord.y;
 		int blockheight = image.getHeight() / rows;
 		int blockwidth = image.getWidth() / cols;
-//		BufferedImage[] blocks = new BufferedImage[rows * cols];
 		ArrayList<BufferedImage> blockslist = new ArrayList<BufferedImage>(rows * cols);
 		for (int y = 0; y < rows; y++) {
 			for (int x = 0; x < cols; x++) {
-//				blocks[y * cols + x] = image.getSubimage(blockwidth * x, blockheight * y,
-//														 blockwidth, blockheight);
 				blockslist.add(image.getSubimage(blockwidth * x, blockheight * y,
 												 blockwidth, blockheight));
 			}
 		}
-//		return blocks;
 		return blockslist;
 	}
 
