@@ -5,31 +5,14 @@ package lib.comparison;
  */
 public enum Metric {
 
-	AE,
-	PAE,
-	PSNR("inf"),
-	MAE,
-	MSE,
-	RMSE,
-	MEPP,
-	FUZZ,
-	NCC("1"),;
-	private String equalval;
-
-	Metric() {
-		this.equalval = "0";
-	}
-
-	Metric(String equalval) {
-		this.equalval = equalval;
-	}
-
-	/**
-	 * 
-	 * @return the value that the metric provides to denote 
-	 * that there is no difference between the given images
-	 */
-	public String equalval() {
-		return this.equalval;
-	}
+	AE,   //   absolute error count, number of different pixels (-fuzz effected)
+	FUZZ, //   mean color distance
+	MAE,  //   mean absolute error (normalized), average channel error distance
+	MEPP, //   mean error per pixel (normalized mean error, normalized peak error)
+	MSE,  //   mean error squared, average of the channel error squared
+	NCC,  //   normalized cross correlation
+	PAE,  //   peak absolute (normalize peak absolute)
+	PSNR, //   peak signal to noise ratio
+	RMSE, //   root mean squared (normalized root mean squared)
+	;
 }
