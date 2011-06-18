@@ -1,4 +1,4 @@
-package lib.comparison;
+package lib.comparators;
 
 import java.io.IOException;
 import java.awt.image.BufferedImage;

@@ -1,6 +1,6 @@
 package app;
 
-import lib.comparison.Metric;
+import lib.comparators.Metric;
 
 /**
  * Representation of available options to the app
