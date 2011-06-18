@@ -17,13 +17,14 @@ import java.awt.image.BufferedImage;
 
 import lib.Compressor;
 import lib.Decompressor;
-import lib.comparison.ImageComparator;
-import lib.comparison.Metric;
-import lib.tilers.AdaptiveRectangularTiler;
+import lib.comparators.ImageComparator;
+import lib.comparators.Metric;
+import lib.tilers.RectangularPixelTiler;
 import lib.transformations.FlipTransform;
 import lib.transformations.FlopTransform;
 import lib.transformations.ImageTransform;
-import lib.transformations.RotateQuadrantsTransform;
+import lib.transformations.AffineRotateQuadrantsTransform;
+import lib.transformations.GrayscaleFilter;
 import lib.transformations.ScaleTransform;
 
 /**
@@ -83,19 +84,18 @@ public class Fic {
 		}
 		BufferedImage image;
 		try {
-			image = ImageIO.read(inputfile);
+			image = new GrayscaleFilter().transform(ImageIO.read(inputfile));
 			int xpixels = (int) (image.getWidth() - image.getWidth() * quality) + 1;
 			int ypixels = (int) (image.getHeight() - image.getHeight() * quality) + 1;
 			Set<ImageTransform> transforms = new HashSet<ImageTransform>() {{
 				add(new FlipTransform());
 				add(new FlopTransform());
 				add(new ScaleTransform(0.5, 0.5));
-				add(new RotateQuadrantsTransform(1));
-				add(new RotateQuadrantsTransform(2));
-				add(new RotateQuadrantsTransform(3));
+				add(new AffineRotateQuadrantsTransform(1));
+				add(new AffineRotateQuadrantsTransform(2));
+				add(new AffineRotateQuadrantsTransform(3));
 			}};
-			Compressor compressor = new Compressor(new AdaptiveRectangularTiler(xpixels / 10, ypixels / 10),
-												   new AdaptiveRectangularTiler(ypixels, ypixels),
+			Compressor compressor = new Compressor(new RectangularPixelTiler(xpixels, ypixels),
 												   new ImageComparator(metric, fuzz), transforms);
 			compressor.compress(image);
 		} catch (IOException ex) {
