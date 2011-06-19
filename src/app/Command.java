@@ -5,28 +5,29 @@ package app;
  */
 public enum Command {
 
-	COMPRESS("compress image to file"),
-	DECOMPRESS("decompress file to image"),;
-	public static final String ID = "COMMAND";
-	private String description;
+    COMPRESS("compress image to file"),
+    DECOMPRESS("decompress file to image"),;
 
-	Command(String description) {
-		this.description = description;
-	}
+    public static final String ID = "COMMAND";
+    private String description;
 
-	/**
-	 * 
-	 * @return a description of the command
-	 */
-	public String description() {
-		return this.description;
-	}
+    Command(String description) {
+        this.description = description;
+    }
 
-	/**
-	 * 
-	 * @return the option representing the command
-	 */
-	public String option() {
-		return '-' + this.name().toLowerCase();
-	}
+    /**
+     *
+     * @return a description of the command
+     */
+    public String description() {
+        return this.description;
+    }
+
+    /**
+     *
+     * @return the option representing the command
+     */
+    public String option() {
+        return '-' + this.name().toLowerCase();
+    }
 }

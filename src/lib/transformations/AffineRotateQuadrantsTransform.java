@@ -13,7 +13,6 @@ public class AffineRotateQuadrantsTransform extends ImageTransform {
 	private int interpolationType;
 
 	/**
-	 * 
 	 * @param quadrants the number of 90 degree arcs to rotate by
 	 */
 	public AffineRotateQuadrantsTransform(int quadrants, int interpolationType) {

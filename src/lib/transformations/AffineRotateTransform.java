@@ -24,7 +24,7 @@ public class AffineRotateTransform extends ImageTransform {
 	@Override
 	public BufferedImage transform(BufferedImage inputimage) {
 		return affineTransform(inputimage, AffineTransform.getRotateInstance(
-				Math.toRadians(degrees), inputimage.getWidth() / 2,
-				inputimage.getHeight() / 2), interpolationType);
+				Math.toRadians(degrees), inputimage.getWidth()  / 2,
+				                         inputimage.getHeight() / 2), interpolationType);
 	}
 }

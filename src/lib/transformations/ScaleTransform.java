@@ -9,37 +9,39 @@ import java.awt.image.BufferedImage;
  */
 public class ScaleTransform extends ImageTransform {
 
-	private double scalex, scaley;
-	private boolean preserveAlpha;
+    private boolean preserveAlpha;
+    private double  scalex, scaley;
 
-	/**
-	 * 
-	 * @param scalex the factor by which coordinates are scaled along the X axis direction
-	 * @param scaley the factor by which coordinates are scaled along the Y axis direction
-	 * @param preserveAlpha whether to preserve the alpha channel or not
-	 */
-	public ScaleTransform(double scalex, double scaley, boolean preserveAlpha) {
-		this.scalex = scalex;
-		this.scaley = scaley;
-		this.preserveAlpha = preserveAlpha;
-	}
+    public ScaleTransform(double scalex, double scaley) {
+        this(scalex, scaley, false);
+    }
 
-	public ScaleTransform(double scalex, double scaley) {
-		this(scalex, scaley, false);
-	}
+    /**
+     *
+     * @param scalex the factor by which coordinates are scaled along the X axis direction
+     * @param scaley the factor by which coordinates are scaled along the Y axis direction
+     * @param preserveAlpha whether to preserve the alpha channel or not
+     */
+    public ScaleTransform(double scalex, double scaley, boolean preserveAlpha) {
+        this.scalex = scalex;
+        this.scaley = scaley;
+        this.preserveAlpha = preserveAlpha;
+    }
 
-	@Override
-	public BufferedImage transform(BufferedImage inputimage) {
-		int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-		int scaledWidth = (int) (inputimage.getWidth() * scalex);
-		int scaledHeight = (int) (inputimage.getHeight() * scaley);
-		BufferedImage scaledImg = new BufferedImage(scaledWidth, scaledHeight, imageType);
-		Graphics2D graphics = scaledImg.createGraphics();
-		if (preserveAlpha) {
-			graphics.setComposite(AlphaComposite.Src);
-		}
-		graphics.drawImage(inputimage, 0, 0, scaledWidth, scaledHeight, null);
-		graphics.dispose();
-		return scaledImg;
-	}
+    @Override
+    public BufferedImage transform(BufferedImage inputimage) {
+        int imageType    = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+        int scaledWidth  = (int) (inputimage.getWidth() * scalex);
+        int scaledHeight = (int) (inputimage.getHeight() * scaley);
+        BufferedImage scaledImg = new BufferedImage(scaledWidth, scaledHeight, imageType);
+        
+        Graphics2D graphics = scaledImg.createGraphics();
+        if (preserveAlpha) {
+            graphics.setComposite(AlphaComposite.Src);
+        }
+        graphics.drawImage(inputimage, 0, 0, scaledWidth, scaledHeight, null);
+        graphics.dispose();
+
+        return scaledImg;
+    }
 }

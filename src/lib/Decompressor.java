@@ -1,14 +1,14 @@
 package lib;
 
 /**
- * 
+ *
  */
 public class Decompressor {
 
-	public Decompressor() {
-	}
+    public Decompressor() {
+    }
 
-	public void decompress() {
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
+    public void decompress() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 }

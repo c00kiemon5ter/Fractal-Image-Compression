@@ -24,6 +24,7 @@ public class FlipTransform extends ImageTransform {
 		int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
 		BufferedImage flippedImg = new BufferedImage(inputimage.getWidth(),
 													inputimage.getHeight(), imageType);
+        
 		Graphics2D graphics = flippedImg.createGraphics();
 		if (preserveAlpha) {
 			graphics.setComposite(AlphaComposite.Src);
@@ -33,6 +34,7 @@ public class FlipTransform extends ImageTransform {
 						   0, 0, inputimage.getWidth(), inputimage.getHeight(),
 						   null);
 		graphics.dispose();
+        
 		return flippedImg;
 	}
 }

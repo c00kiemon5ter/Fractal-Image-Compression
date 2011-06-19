@@ -1,6 +1,7 @@
 package lib.tilers;
 
 import java.awt.image.BufferedImage;
+
 import java.util.ArrayList;
 
 /**
@@ -10,9 +11,10 @@ import java.util.ArrayList;
  */
 public class AdaptiveTriangularTiler implements Tiler<BufferedImage> {
 
-	@Override
-	public ArrayList<BufferedImage> tile(BufferedImage image) {
-		// TODO: FUTURE: algorithm to determine triangle splitting 
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+    @Override
+    public ArrayList<BufferedImage> tile(BufferedImage image) {
+
+        // TODO: FUTURE: algorithm to determine triangle splitting
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
