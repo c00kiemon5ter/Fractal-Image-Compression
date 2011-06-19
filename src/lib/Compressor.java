@@ -2,7 +2,7 @@ package lib;
 
 import lib.tilers.Tiler;
 import lib.transformations.ImageTransform;
-import lib.comparators.Distanceable;
+import lib.comparators.Distanceator;
 import lib.transformations.ScaleTransform;
 
 import java.util.ArrayList;
@@ -16,11 +16,11 @@ import java.awt.image.BufferedImage;
 public class Compressor {
 
 	private Tiler<BufferedImage> tiler;
-	private Distanceable<BufferedImage> comparator;
+	private Distanceator<BufferedImage> comparator;
 	private Set<ImageTransform> transforms;
 
 	public Compressor(Tiler<BufferedImage> tiler,
-					  Distanceable<BufferedImage> comparator,
+					  Distanceator<BufferedImage> comparator,
 					  Set<ImageTransform> transforms) {
 		this.tiler = tiler;
 		this.comparator = comparator;

@@ -1,12 +1,12 @@
 package lib.comparators;
 
 /**
- * This interface should be implemented by classes for which
- * it makes sense to measure the distance between instances.
+ * This interface should be implemented by classes that implement
+ * a comparison between two object and return their distance-difference.
  * Several distance metrics may be supported.
  * @param <T> 
  */
-public interface Distanceable<T> {
+public interface Distanceator<T> {
 
 	/**
 	 * Distance between two given objects
