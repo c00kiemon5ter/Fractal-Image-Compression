@@ -1,13 +1,13 @@
 package lib.comparators;
 
 import java.awt.image.BufferedImage;
-import lib.Pixel;
+import lib.utils.PixelUtils;
 
 /**
  * different metrics to count the distance of two integers representing pixels
  * 
  * @see #distance(int, int) 
- * @see Pixel
+ * @see PixelUtils
  * @see BufferedImage#getRGB(int, int) 
  * @see BufferedImage#getRGB(int, int, int, int, int[], int, int) 
  */
@@ -62,11 +62,9 @@ public enum Metric {
 
 		@Override
 		public double distance(int a, int b) {
-			Pixel x = new Pixel(a);
-			Pixel y = new Pixel(b);
-			int reddiff   = x.red()   - y.red();
-			int greendiff = x.green() - y.green();
-			int bluediff  = x.blue()  - y.blue();
+			int reddiff   = PixelUtils.getRed  (a) - PixelUtils.getRed  (b);
+			int greendiff = PixelUtils.getGreen(a) - PixelUtils.getGreen(b);
+			int bluediff  = PixelUtils.getBlue (a) - PixelUtils.getBlue (b);
 			return reddiff * reddiff + greendiff * greendiff + bluediff * bluediff;
 		}
 	},
@@ -120,7 +118,7 @@ public enum Metric {
 	 * @return the distance between the two integers as defined by the metric
 	 * 
 	 * @see Metric
-	 * @see Pixel
+	 * @see PixelUtils
 	 */
 	public double distance(int a, int b) {
 		return Math.abs(a - b);
