@@ -28,6 +28,11 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
         int cols = image.getWidth() / blockwidth;
         int rows = image.getHeight() / blockheight;
 
+        if ((cols == 0) || (rows == 0)) {
+            throw new IllegalArgumentException(String.format("Block sizes too big - width: %d - height: %d",
+                                                                                  blockwidth, blockheight));
+        }
+
         image = image.getSubimage(0, 0, cols * blockwidth, rows * blockheight);
 
         ArrayList<BufferedImage> blockslist = new ArrayList<BufferedImage>(rows * cols);
