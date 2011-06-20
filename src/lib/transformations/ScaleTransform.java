@@ -44,4 +44,12 @@ public class ScaleTransform extends ImageTransform {
 
         return scaledImg;
     }
+
+    public double getScalex() {
+        return scalex;
+    }
+
+    public double getScaley() {
+        return scaley;
+    }
 }
