@@ -7,8 +7,12 @@ import lib.tilers.Tiler;
 import lib.transformations.ImageTransform;
 import lib.transformations.ScaleTransform;
 
+import lib.utils.Utils;
+
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,13 +51,18 @@ public class Compressor {
 
     /**
      * TODO: normalize (eg. Blur) the image ?
-     * TODO: how do we get the transform ? map it ?
      * TODO: handle scale transform -- subimage search ?
-     *
-     * @param image
+     * 
+     * Compress a given image. Compressions takes place as a mapping of 
+     * small images and transforms to points. Applying the transforms
+     * to the images and placing the resulted transformed images
+     * to the mapped points, the original image is reassembled.
+     * 
+     * @param image the image to compress
+     * @return a mapping of points to images and transforms. 
      */
-    public void compress(BufferedImage image) {
-        ArrayList<BufferedImage> ranges = tiler.tile(image);
+    public Map<Point, Map.Entry<BufferedImage, ImageTransform>> compress(BufferedImage image) {
+        ArrayList<BufferedImage> rangeblocks = tiler.tile(image);
 
         /*
          * the domain image to tile, is half the size (half the width
@@ -63,21 +72,24 @@ public class Compressor {
          *
          *     #domains = (1/2 * w) * (1/2 * h) = 1/4 * #ranges
          *
-         * Here we pre-calculate all transforms. domains list holds
-         * all possible transformed and original domain blocks.
+         * We pre-calculate all transforms to hold all possible
+         * transformed and original domain blocks.
          *
          *     #domains = #transforms * 1/4 * #ranges
+         *
+         * We map each result of a transform with the original
+         * domain and transform operation which resulted it.
          */
-        ArrayList<BufferedImage> domains = new ArrayList<BufferedImage>(transforms.size() * ranges.size() / 4);
+        Map<BufferedImage, Map.Entry<BufferedImage, ImageTransform>> domainblocks = new HashMap<BufferedImage, Map.Entry<BufferedImage, ImageTransform>>(transforms.size() * rangeblocks.size() / 4);
 
         for (BufferedImage domainImg : tiler.tile(new ScaleTransform(.5, .5).transform(image))) {
             for (ImageTransform transform : transforms) {
-                domains.add(transform.transform(domainImg));
+                domainblocks.put(transform.transform(domainImg), new SimpleEntry<BufferedImage, ImageTransform>(domainImg, transform));
             }
         }
 
         /* A mapping between a range and most suitable domain block */
-        Map<BufferedImage, BufferedImage> mapping = new HashMap<BufferedImage, BufferedImage>(ranges.size());
+        Map<BufferedImage, BufferedImage> rangeDomainMatches = new HashMap<BufferedImage, BufferedImage>(rangeblocks.size());
 
         /*
          * After the end of each domain loop, or in other words, before
@@ -85,14 +97,14 @@ public class Compressor {
          * match for the current (and all previous) range images.
          * Thus, we do not need to hold a mapping between the range image
          * and the domain image along with its distance. We hold the best
-         * (minimum) distance found so far, in the a variable, whichi is
+         * (minimum) distance found so far, in the a variable, which is
          * reset in every range image iteration.
          */
-        for (BufferedImage rangeimg : ranges) {
+        for (BufferedImage rangeblock : rangeblocks) {
             double mindiff = Double.MAX_VALUE;
 
-            for (BufferedImage domainimg : domains) {
-                double diff = comparator.distance(rangeimg, domainimg);
+            for (BufferedImage domainblock : domainblocks.keySet()) {
+                double diff = comparator.distance(rangeblock, domainblock);
 
                 /*
                  * If we haven't seen the image before (which means
@@ -103,15 +115,26 @@ public class Compressor {
                  * than the best (minimum) so far), we update the best
                  * difference and map the range to the new domain image.
                  */
-                if (!mapping.containsKey(rangeimg) || (mindiff > diff)) {
+                if (!rangeDomainMatches.containsKey(rangeblock) || (mindiff > diff)) {
+                    rangeDomainMatches.put(rangeblock, domainblock);
                     mindiff = diff;
-                    mapping.put(rangeimg, domainimg);
                 }
             }
         }
 
         /*
-         * TODO: Reverse map the domain blocks to a list of ranges' points
+         * All matches are found. We now need the original domain block(1),
+         * the transform(2) needed to be applied to get the range image and
+         * a point(3) which represents the position of the range image.
+         * We map each point to a corresponding domain image and transform.
          */
+        Map<Point, Map.Entry<BufferedImage, ImageTransform>> results = new HashMap<Point, Map.Entry<BufferedImage, ImageTransform>>(rangeblocks.size());
+        int width = image.getWidth();
+
+        for (BufferedImage range : rangeDomainMatches.keySet()) {
+            results.put(Utils.indexToPoint(rangeblocks.indexOf(range), width), domainblocks.get(rangeDomainMatches.get(range)));
+        }
+        
+        return results;
     }
 }
