@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Properties;
-import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +33,13 @@ import javax.imageio.ImageIO;
 /**
  * Command line utility to compress an image using
  * fractal image compression methods.
+ * 
+ * TODO: Fix Fractal Writer and Reader
+ * TODO: Fix Options - read configuration file
+ * TODO: Fix Options - add scale factor 
+ * TODO: Fix Options - add pixel x/y options, remove quality
+ * TODO: Fix Options - allow configuration of Transforms
+ * TODO: Fix Options - allow configuration of Filters
  */
 public class Fic {
 
@@ -41,6 +47,18 @@ public class Fic {
      * the system logger
      */
     private static final Logger LOGGER = Logger.getLogger("debugger");
+
+    /**
+     * start the app, read the args, validate state and run.
+     *
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        Fic fic = new Fic();
+        fic.parseCli(args);
+        fic.validateAndInitProperties();
+        fic.createAndRunTask();
+    }
 
     /**
      * Options from the command line
@@ -62,25 +80,13 @@ public class Fic {
      */
     public Fic() {
         this.properties = new Properties() {{
-            setProperty(Option.OUTPUT.toString(), "output.fic");
-            setProperty(Option.METRIC.toString(), "AE");
-            setProperty(Option.FUZZ.toString(), "5");
+            setProperty(Option.OUTPUT.toString (), "output.fic");
+            setProperty(Option.METRIC.toString (), "AE");
+            setProperty(Option.FUZZ.toString   (), "5");
             setProperty(Option.QUALITY.toString(), "0.9");
             setProperty(Option.VERBOSE.toString(), Boolean.FALSE.toString());
-            setProperty(Option.DEBUG.toString(), Boolean.FALSE.toString());
+            setProperty(Option.DEBUG.toString  (), Boolean.FALSE.toString());
         }};
-    }
-
-    /**
-     * Do some work, start the app, read the args, validate state and run.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        Fic fic = new Fic();
-        fic.parseCli(args);
-        fic.validateAndInitProperties();
-        fic.createAndRunTask();
     }
 
     private void compressTask() {
@@ -92,20 +98,22 @@ public class Fic {
             image = new GrayscaleFilter().transform(ImageIO.read(inputfile));
             int xpixels = (int) (image.getWidth()  - image.getWidth()  * quality) + 1;
             int ypixels = (int) (image.getHeight() - image.getHeight() * quality) + 1;
-            Set<ImageTransform> transforms = new HashSet<ImageTransform>() {{
-                add(new FlipTransform());
-                add(new FlopTransform());
-                add(new ScaleTransform(0.5, 0.5));
-                add(new AffineRotateQuadrantsTransform(1));
-                add(new AffineRotateQuadrantsTransform(2));
-                add(new AffineRotateQuadrantsTransform(3));
-            }};
-            Compressor compressor = new Compressor(new RectangularPixelTiler(xpixels, ypixels),
-                                                   new ImageComparator(metric, fuzz), transforms);
+            double scalefactor = .5;
+            Compressor compressor = new Compressor(new ScaleTransform(scalefactor, scalefactor),
+                                                   new RectangularPixelTiler(xpixels, ypixels),
+                                                   new ImageComparator(metric, fuzz),
+                                                   new HashSet<ImageTransform>(5) {{
+                                                       add(new FlipTransform());
+                                                       add(new FlopTransform());
+                                                       add(new AffineRotateQuadrantsTransform(1));
+                                                       add(new AffineRotateQuadrantsTransform(2));
+                                                       add(new AffineRotateQuadrantsTransform(3));
+                                                   }});
             compressor.compress(image);
         } catch (IOException ex) {
             usage();
             System.err.println(Error.IMAGE_READ.description(inputfile.toString()));
+            System.err.println(ex);
             System.exit(Error.IMAGE_READ.errcode());
         }
     }
