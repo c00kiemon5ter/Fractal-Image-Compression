@@ -6,6 +6,8 @@ import lib.Decompressor;
 import lib.comparators.ImageComparator;
 import lib.comparators.Metric;
 
+import lib.io.ProgressBar;
+
 import lib.tilers.RectangularPixelTiler;
 
 import lib.transformations.AffineRotateQuadrantsTransform;
@@ -23,6 +25,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.ListIterator;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -33,15 +37,15 @@ import javax.imageio.ImageIO;
 /**
  * Command line utility to compress an image using
  * fractal image compression methods.
- * 
- * TODO: Fix Fractal Writer and Reader
+ *
+ * TODO: Fix Fractal Writer and Reader - Externalizable interface
  * TODO: Fix Options - read configuration file
- * TODO: Fix Options - add scale factor 
+ * TODO: Fix Options - add scale factor
  * TODO: Fix Options - add pixel x/y options, remove quality
  * TODO: Fix Options - allow configuration of Transforms
  * TODO: Fix Options - allow configuration of Filters
  */
-public class Fic {
+public class Fic implements Observer {
 
     /**
      * the system logger
@@ -69,6 +73,11 @@ public class Fic {
     private Metric  metric;
 
     /**
+     * visual progress of the compression
+     */
+    private ProgressBar progressbar;
+
+    /**
      * the properties table holds the configuration settings
      */
     private Properties properties;
@@ -79,13 +88,14 @@ public class Fic {
      * with the default values.
      */
     public Fic() {
+        this.progressbar = new ProgressBar();
         this.properties = new Properties() {{
-            setProperty(Option.OUTPUT.toString (), "output.fic");
-            setProperty(Option.METRIC.toString (), "AE");
-            setProperty(Option.FUZZ.toString   (), "5");
+            setProperty(Option.OUTPUT.toString(), "output.fic");
+            setProperty(Option.METRIC.toString(), "AE");
+            setProperty(Option.FUZZ.toString(), "5");
             setProperty(Option.QUALITY.toString(), "0.9");
             setProperty(Option.VERBOSE.toString(), Boolean.FALSE.toString());
-            setProperty(Option.DEBUG.toString  (), Boolean.FALSE.toString());
+            setProperty(Option.DEBUG.toString(), Boolean.FALSE.toString());
         }};
     }
 
@@ -93,22 +103,32 @@ public class Fic {
         if (verbose) {
             LOGGER.log(Level.INFO, ":: Initializing compress process..");
         }
+
         BufferedImage image;
+        
         try {
             image = new GrayscaleFilter().transform(ImageIO.read(inputfile));
-            int xpixels = (int) (image.getWidth()  - image.getWidth()  * quality) + 1;
+            
+            int xpixels = (int) (image.getWidth () - image.getWidth () * quality) + 1;
             int ypixels = (int) (image.getHeight() - image.getHeight() * quality) + 1;
             double scalefactor = .5;
-            Compressor compressor = new Compressor(new ScaleTransform(scalefactor, scalefactor),
-                                                   new RectangularPixelTiler(xpixels, ypixels),
-                                                   new ImageComparator(metric, fuzz),
-                                                   new HashSet<ImageTransform>(5) {{
-                                                       add(new FlipTransform());
-                                                       add(new FlopTransform());
-                                                       add(new AffineRotateQuadrantsTransform(1));
-                                                       add(new AffineRotateQuadrantsTransform(2));
-                                                       add(new AffineRotateQuadrantsTransform(3));
-                                                   }});
+            
+            Compressor compressor = new Compressor(
+                                        new ScaleTransform(scalefactor, scalefactor),
+                                        new RectangularPixelTiler(xpixels, ypixels), 
+                                        new ImageComparator(metric, fuzz),
+                                        new HashSet<ImageTransform>(5) {{
+                                            add(new FlipTransform());
+                                            add(new FlopTransform());
+                                            add(new AffineRotateQuadrantsTransform(1));
+                                            add(new AffineRotateQuadrantsTransform(2));
+                                            add(new AffineRotateQuadrantsTransform(3));
+                                        }}, this);
+
+            if (verbose) {
+                LOGGER.log(Level.INFO, ":: Starting compression .. ");
+            }
+
             compressor.compress(image);
         } catch (IOException ex) {
             usage();
@@ -131,10 +151,10 @@ public class Fic {
      */
     private void createAndRunTask() {
         switch (Command.valueOf(properties.getProperty(Command.ID))) {
-            case COMPRESS:
+            case COMPRESS :
                 compressTask();
                 break;
-            case DECOMPRESS:
+            case DECOMPRESS :
                 decompressTask();
                 break;
         }
@@ -240,6 +260,7 @@ public class Fic {
             if ((quality <= 0) || (quality > Option.MaxQuality)) {
                 throw new NumberFormatException();
             }
+
             // set quality in space (0, 1]
             quality /= Option.MaxQuality;
         } catch (NumberFormatException nfe) {
@@ -336,9 +357,9 @@ public class Fic {
      */
     private void usage() {
         StringBuilder helpmsg = new StringBuilder();
-        String headerformat   = "usage: java -jar %s.jar <%s> [%s] %s <input-file>\n";
-        String cmdformat = "\t\t%s\t%s\n";
-        String optformat = "\t\t%s\t\t%s\n";
+        String headerformat = "usage: java -jar %s.jar <%s> [%s] %s <input-file>\n";
+        String cmdformat    = "\t\t%s\t%s\n";
+        String optformat    = "\t\t%s\t\t%s\n";
 
         helpmsg.append(String.format(headerformat, Fic.class.getSimpleName(), Command.class.getSimpleName(),
                                      Option.class.getSimpleName(), Option.INPUT.option()));
@@ -355,5 +376,11 @@ public class Fic {
         }
 
         System.out.println(helpmsg.toString());
+    }
+
+    @Override
+    public void update(Observable observableSource, Object arr_done_all) {
+        int[] args = (int[]) arr_done_all;
+        progressbar.update(args[0], args[1]);
     }
 }
