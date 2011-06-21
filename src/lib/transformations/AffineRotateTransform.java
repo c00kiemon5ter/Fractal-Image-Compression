@@ -12,17 +12,17 @@ public class AffineRotateTransform extends ImageTransform {
 	private double degrees;
 	private int interpolationType;
 
-	public AffineRotateTransform(double degrees, int interpolationType) {
+	public AffineRotateTransform(final double degrees, final int interpolationType) {
 		this.degrees = degrees;
 		this.interpolationType = interpolationType;
 	}
 
-	public AffineRotateTransform(double degrees) {
+	public AffineRotateTransform(final double degrees) {
 		this(degrees, AffineTransformOp.TYPE_BILINEAR);
 	}
 
 	@Override
-	public BufferedImage transform(BufferedImage inputimage) {
+	public BufferedImage transform(final BufferedImage inputimage) {
 		return affineTransform(inputimage, AffineTransform.getRotateInstance(
 				Math.toRadians(degrees), inputimage.getWidth()  / 2,
 				                         inputimage.getHeight() / 2), interpolationType);

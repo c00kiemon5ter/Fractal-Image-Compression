@@ -16,7 +16,7 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
      * @param blockwidth the pixels each block will be in the x axle
      * @param blockheight the pixels each block will be in the y axle
      */
-    public RectangularPixelTiler(int blockwidth, int blockheight) {
+    public RectangularPixelTiler(final int blockwidth, final int blockheight) {
         assert (blockheight > 0) && (blockwidth > 0);
         
         this.blockwidth  = blockwidth;
@@ -24,7 +24,7 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
     }
 
     @Override
-    public ArrayList<BufferedImage> tile(BufferedImage image) {
+    public ArrayList<BufferedImage> tile(final BufferedImage image) {
 
         // normalize image -- adjust size to blocks' width and height
         int cols = image.getWidth () / blockwidth;
@@ -32,13 +32,13 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
 
         assert (cols > 0) && (rows > 0) : String.format("Block sizes too big - width: %d - height: %d", blockwidth, blockheight);
 
-        image = image.getSubimage(0, 0, cols * blockwidth, rows * blockheight);
+        BufferedImage img = image.getSubimage(0, 0, cols * blockwidth, rows * blockheight);
 
         ArrayList<BufferedImage> blockslist = new ArrayList<BufferedImage>(rows * cols);
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
-                blockslist.add(image.getSubimage(blockwidth * col, blockheight * row,
-                                                 blockwidth,       blockheight));
+                blockslist.add(img.getSubimage(blockwidth * col, blockheight * row,
+                                               blockwidth,       blockheight));
             }
         }
 

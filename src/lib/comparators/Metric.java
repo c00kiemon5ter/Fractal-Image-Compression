@@ -24,12 +24,12 @@ public enum Metric {
     AE {
 
         @Override
-        public double distance(int a, int b, double fuzz) {
+        public final double distance(final int a, final int b, final double fuzz) {
             return super.distance(a, b) <= fuzz ? 0 : 1;
         }
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             return (a == b) ? 0 : 1;
         }
     },
@@ -40,7 +40,7 @@ public enum Metric {
     FUZZ {
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             return 0;
         }
     },
@@ -51,7 +51,7 @@ public enum Metric {
     MAE {
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             return 0;
         }
     },
@@ -62,7 +62,7 @@ public enum Metric {
     MEPP {
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             return 0;
         }
     },
@@ -74,7 +74,7 @@ public enum Metric {
     MSE {
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             int reddiff   = PixelUtils.getRed  (a) - PixelUtils.getRed  (b);
             int greendiff = PixelUtils.getGreen(a) - PixelUtils.getGreen(b);
             int bluediff  = PixelUtils.getBlue (a) - PixelUtils.getBlue (b);
@@ -89,7 +89,7 @@ public enum Metric {
     NCC {
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             return 0;
         }
     },
@@ -100,7 +100,7 @@ public enum Metric {
     PAE {
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             return 0;
         }
     },
@@ -111,7 +111,7 @@ public enum Metric {
     PSNR {
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             return 0;
         }
     },
@@ -123,7 +123,7 @@ public enum Metric {
     RMSE {
 
         @Override
-        public double distance(int a, int b) {
+        public final double distance(final int a, final int b) {
             return Math.sqrt(MSE.distance(a, b));
         }
     },;
@@ -137,7 +137,7 @@ public enum Metric {
      * @see Metric
      * @see PixelUtils
      */
-    public double distance(int a, int b, double fuzz) {
+    public double distance(final int a, final int b, final double fuzz) {
         return distance(a, b);
     }
 
@@ -149,7 +149,7 @@ public enum Metric {
      * @see Metric
      * @see PixelUtils
      */
-    public double distance(int a, int b) {
+    public double distance(final int a, final int b) {
         return Math.abs(a - b);
     }
 }

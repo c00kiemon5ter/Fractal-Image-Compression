@@ -20,13 +20,13 @@ public class AdaptiveRectangularTiler implements Tiler<BufferedImage> {
      * @param initialRows the initial number of rows
      * @param initialCols the initial number of columns
      */
-    public AdaptiveRectangularTiler(int initialRows, int initialCols) {
+    public AdaptiveRectangularTiler(final int initialRows, final int initialCols) {
         this.rows = initialRows;
         this.cols = initialCols;
     }
 
     @Override
-    public ArrayList<BufferedImage> tile(BufferedImage image) {
+    public ArrayList<BufferedImage> tile(final BufferedImage image) {
         Point coord = adjustColsRows(image, rows, cols);
 
         this.rows = coord.x;
@@ -50,7 +50,7 @@ public class AdaptiveRectangularTiler implements Tiler<BufferedImage> {
      * Adjust the number of columns and rows to split the image
      * so that it accurately fits in the rectangles.
      */
-    private Point adjustColsRows(BufferedImage image, int rows, int cols) {
+    private Point adjustColsRows(final BufferedImage image, int rows, int cols) {
         while (image.getHeight() % rows != 0) {
             rows++;
         }

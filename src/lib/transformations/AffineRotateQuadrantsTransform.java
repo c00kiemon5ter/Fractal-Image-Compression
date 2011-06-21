@@ -13,19 +13,20 @@ public class AffineRotateQuadrantsTransform extends ImageTransform {
 	private int interpolationType;
 
 	/**
-	 * @param quadrants the number of 90 degree arcs to rotate by
+     * @param quadrants the number of 90 degree arcs to rotate by
+     * @param interpolationType  
 	 */
-	public AffineRotateQuadrantsTransform(int quadrants, int interpolationType) {
+	public AffineRotateQuadrantsTransform(final int quadrants, final int interpolationType) {
 		this.quadrants = quadrants;
 		this.interpolationType = interpolationType;
 	}
 
-	public AffineRotateQuadrantsTransform(int quadrants) {
+	public AffineRotateQuadrantsTransform(final int quadrants) {
 		this(quadrants, AffineTransformOp.TYPE_BILINEAR);
 	}
 
 	@Override
-	public BufferedImage transform(BufferedImage inputimage) {
+	public BufferedImage transform(final BufferedImage inputimage) {
 		return affineTransform(inputimage, AffineTransform.getQuadrantRotateInstance(
 				quadrants, inputimage.getWidth() / 2,
 				inputimage.getHeight() / 2), interpolationType);

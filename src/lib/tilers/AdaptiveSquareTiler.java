@@ -13,12 +13,12 @@ public class AdaptiveSquareTiler implements Tiler<BufferedImage> {
 
     private AdaptiveRectangularTiler adaptRectTiler;
 
-    public AdaptiveSquareTiler(int initialBlocksOnOneSide) {
+    public AdaptiveSquareTiler(final int initialBlocksOnOneSide) {
         this.adaptRectTiler = new AdaptiveRectangularTiler(initialBlocksOnOneSide, initialBlocksOnOneSide);
     }
 
     @Override
-    public ArrayList<BufferedImage> tile(BufferedImage image) {
+    public ArrayList<BufferedImage> tile(final BufferedImage image) {
         return this.adaptRectTiler.tile(image);
     }
 }

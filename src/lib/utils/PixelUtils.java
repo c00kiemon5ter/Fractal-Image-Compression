@@ -20,19 +20,19 @@ public class PixelUtils {
 	final static int GREEN_MASK = 0x0000ff00; // int green = (pixel & GREEN_MASK) >> GREEN_SHIFT;
 	final static int BLUE_MASK  = 0x000000ff; // int blue  =  pixel & BLUE_MASK;
 
-	public static int getAlpha(int pixel) {
+	public static int getAlpha(final int pixel) {
 		return (pixel >> ALPHA_SHIFT) & MASK;
 	}
 
-	public static int getRed(int pixel) {
+	public static int getRed(final int pixel) {
 		return (pixel >> RED_SHIFT) & MASK;
 	}
 
-	public static int getGreen(int pixel) {
+	public static int getGreen(final int pixel) {
 		return (pixel >> GREEN_SHIFT) & MASK;
 	}
 
-	public static int getBlue(int pixel) {
+	public static int getBlue(final int pixel) {
 		return pixel & MASK;
 	}
 }

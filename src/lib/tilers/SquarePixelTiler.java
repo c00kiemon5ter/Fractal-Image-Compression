@@ -18,12 +18,12 @@ public class SquarePixelTiler implements Tiler<BufferedImage> {
     /**
      * @param blockside the pixels of each side of the block
      */
-    public SquarePixelTiler(int blockside) {
+    public SquarePixelTiler(final int blockside) {
         this.rectTiler = new RectangularPixelTiler(blockside, blockside);
     }
 
     @Override
-    public ArrayList<BufferedImage> tile(BufferedImage image) {
+    public ArrayList<BufferedImage> tile(final BufferedImage image) {
         return rectTiler.tile(image);
     }
 }

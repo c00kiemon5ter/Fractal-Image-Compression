@@ -11,7 +11,7 @@ public class FlopTransform extends ImageTransform {
 
 	private boolean preserveAlpha;
 
-	public FlopTransform(boolean preserveAlpha) {
+	public FlopTransform(final boolean preserveAlpha) {
 		this.preserveAlpha = preserveAlpha;
 	}
 

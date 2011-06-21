@@ -11,7 +11,7 @@ public class AffineFlipTransform extends ImageTransform {
 
 	private int interpolationType;
 
-	public AffineFlipTransform(int interpolationType) {
+	public AffineFlipTransform(final int interpolationType) {
 		this.interpolationType = interpolationType;
 	}
 
@@ -20,7 +20,7 @@ public class AffineFlipTransform extends ImageTransform {
 	}
 
 	@Override
-	public BufferedImage transform(BufferedImage inputimage) {
+	public BufferedImage transform(final BufferedImage inputimage) {
 		AffineTransform transform = new AffineTransform();
 		transform.translate(inputimage.getWidth() / 2, inputimage.getHeight() / 2);
 		transform.scale(1, -1);

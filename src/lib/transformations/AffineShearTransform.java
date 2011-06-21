@@ -20,18 +20,18 @@ public class AffineShearTransform extends ImageTransform {
 	 * direction of the positive Y axis as a factor of their X coordinate
 	 * @param interpolationType  
 	 */
-	public AffineShearTransform(double shearx, double sheary, int interpolationType) {
+	public AffineShearTransform(final double shearx, final double sheary, final int interpolationType) {
 		this.shearx = shearx;
 		this.sheary = sheary;
 		this.interpolationType = interpolationType;
 	}
 
-	public AffineShearTransform(double shearx, double sheary) {
+	public AffineShearTransform(final double shearx, final double sheary) {
 		this(shearx, sheary, AffineTransformOp.TYPE_BILINEAR);
 	}
 
 	@Override
-	public BufferedImage transform(BufferedImage inputimage) {
+	public BufferedImage transform(final BufferedImage inputimage) {
 		return affineTransform(inputimage, AffineTransform.getShearInstance(shearx, sheary), interpolationType);
 	}
 }

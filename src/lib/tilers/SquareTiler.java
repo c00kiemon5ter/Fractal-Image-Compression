@@ -13,12 +13,12 @@ public class SquareTiler implements Tiler<BufferedImage> {
 
     private RectangularTiler rectTiler;
 
-    public SquareTiler(int blocksInOneSide) {
+    public SquareTiler(final int blocksInOneSide) {
         this.rectTiler = new RectangularTiler(blocksInOneSide, blocksInOneSide);
     }
 
     @Override
-    public ArrayList<BufferedImage> tile(BufferedImage image) {
+    public ArrayList<BufferedImage> tile(final BufferedImage image) {
         return this.rectTiler.tile(image);
     }
 }

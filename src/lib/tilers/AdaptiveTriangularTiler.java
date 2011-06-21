@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class AdaptiveTriangularTiler implements Tiler<BufferedImage> {
 
     @Override
-    public ArrayList<BufferedImage> tile(BufferedImage image) {
+    public ArrayList<BufferedImage> tile(final BufferedImage image) {
 
         // TODO: FUTURE: algorithm to determine triangle splitting
         throw new UnsupportedOperationException("Not supported yet.");

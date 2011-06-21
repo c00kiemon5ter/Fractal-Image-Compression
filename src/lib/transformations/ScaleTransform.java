@@ -12,7 +12,7 @@ public class ScaleTransform extends ImageTransform {
     private boolean preserveAlpha;
     private double  scalex, scaley;
 
-    public ScaleTransform(double scalex, double scaley) {
+    public ScaleTransform(final double scalex, final double scaley) {
         this(scalex, scaley, false);
     }
 
@@ -22,14 +22,14 @@ public class ScaleTransform extends ImageTransform {
      * @param scaley the factor by which coordinates are scaled along the Y axis direction
      * @param preserveAlpha whether to preserve the alpha channel or not
      */
-    public ScaleTransform(double scalex, double scaley, boolean preserveAlpha) {
+    public ScaleTransform(final double scalex, final double scaley, final boolean preserveAlpha) {
         this.scalex = scalex;
         this.scaley = scaley;
         this.preserveAlpha = preserveAlpha;
     }
 
     @Override
-    public BufferedImage transform(BufferedImage inputimage) {
+    public BufferedImage transform(final BufferedImage inputimage) {
         int imageType    = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
         int scaledWidth  = (int) (inputimage.getWidth() * scalex);
         int scaledHeight = (int) (inputimage.getHeight() * scaley);

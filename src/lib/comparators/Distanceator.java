@@ -17,5 +17,5 @@ public interface Distanceator<T> {
      *
      * @see Metric
      */
-    double distance(T obj1, T obj2);
+    double distance(final T obj1, final T obj2);
 }

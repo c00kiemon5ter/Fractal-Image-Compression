@@ -11,7 +11,7 @@ public class FlipTransform extends ImageTransform {
 
 	private boolean preserveAlpha;
 
-	public FlipTransform(boolean preserveAlpha) {
+	public FlipTransform(final boolean preserveAlpha) {
 		this.preserveAlpha = preserveAlpha;
 	}
 

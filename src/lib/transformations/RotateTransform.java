@@ -12,15 +12,15 @@ public class RotateTransform extends ImageTransform {
     private double  degrees, pointx, pointy;
     private boolean preserveAlpha;
 
-    public RotateTransform(double degrees) {
+    public RotateTransform(final double degrees) {
         this(degrees, 0, 0, false);
     }
 
-    public RotateTransform(double degrees, boolean preserveAlpha) {
+    public RotateTransform(final double degrees, final boolean preserveAlpha) {
         this(degrees, 0, 0, preserveAlpha);
     }
 
-    public RotateTransform(double degrees, double pointx, double pointy) {
+    public RotateTransform(final double degrees, final double pointx, final double pointy) {
         this(degrees, pointx, pointy, false);
     }
 
@@ -30,7 +30,8 @@ public class RotateTransform extends ImageTransform {
      * @param pointy the y coordinate of the origin of the rotation
      * @param preserveAlpha  whether to preserve the alpha channel or not
      */
-    public RotateTransform(double degrees, double pointx, double pointy, boolean preserveAlpha) {
+    public RotateTransform(final double degrees, final double pointx,
+                           final double pointy, final boolean preserveAlpha) {
         this.degrees = degrees;
         this.pointx  = pointx;
         this.pointy  = pointy;
@@ -38,7 +39,7 @@ public class RotateTransform extends ImageTransform {
     }
 
     @Override
-    public BufferedImage transform(BufferedImage inputimage) {
+    public BufferedImage transform(final BufferedImage inputimage) {
         int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
         BufferedImage rotatedImg = new BufferedImage(inputimage.getWidth(), inputimage.getHeight(), imageType);
         

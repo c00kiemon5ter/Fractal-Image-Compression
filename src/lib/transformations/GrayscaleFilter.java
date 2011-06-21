@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 public class GrayscaleFilter extends ImageTransform {
 
     @Override
-    public BufferedImage transform(BufferedImage inputimage) {
+    public BufferedImage transform(final BufferedImage inputimage) {
         BufferedImage grayImg = new BufferedImage(inputimage.getWidth(),
                                                   inputimage.getHeight(),
                                                   BufferedImage.TYPE_BYTE_GRAY);

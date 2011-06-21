@@ -17,22 +17,22 @@ public class RectangularTiler implements Tiler<BufferedImage> {
      * @param rows the rows to tile the image
      * @param cols the columns to tile the image
      */
-    public RectangularTiler(int rows, int cols) {
+    public RectangularTiler(final int rows, final int cols) {
         this.rows = rows;
         this.cols = cols;
     }
 
     @Override
-    public ArrayList<BufferedImage> tile(BufferedImage image) {
-        image = adjustImageSizeDown(image, rows, cols);
+    public ArrayList<BufferedImage> tile(final BufferedImage image) {
+        BufferedImage img = adjustImageSizeDown(image, rows, cols);
 
-        int blockheight = image.getHeight() / rows;
-        int blockwidth  = image.getWidth() / cols;
+        int blockheight = img.getHeight() / rows;
+        int blockwidth  = img.getWidth() / cols;
         
         ArrayList<BufferedImage> blockslist  = new ArrayList<BufferedImage>(rows * cols);
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
-                blockslist.add(image.getSubimage(blockwidth * x, blockheight * y,
+                blockslist.add(img.getSubimage(blockwidth * x, blockheight * y,
                                                  blockwidth,     blockheight));
             }
         }
@@ -50,7 +50,7 @@ public class RectangularTiler implements Tiler<BufferedImage> {
      * @param cols the columns to split the image
      * @return the adjusted image, the image with the correct size
      */
-    private BufferedImage adjustImageSizeDown(BufferedImage image, int rows, int cols) {
+    private BufferedImage adjustImageSizeDown(final BufferedImage image, final int rows, final int cols) {
         int width = image.getWidth();
 
         while (width % cols != 0) {

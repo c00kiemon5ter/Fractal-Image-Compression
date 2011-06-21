@@ -1,5 +1,6 @@
 package app;
 
+import app.config.Configuration;
 import lib.Compressor;
 import lib.Decompressor;
 
@@ -61,6 +62,7 @@ public class Fic implements Observer {
      */
     public static void main(String[] args) {
         Fic fic = new Fic();
+        Configuration conf = new Configuration();
         fic.parseCli(args);
         fic.validateAndInitProperties();
         fic.createAndRunTask();
@@ -381,7 +383,7 @@ public class Fic implements Observer {
     }
 
     @Override
-    public void update(Observable observableSource, Object arr_done_all) {
+    public void update(final Observable observableSource, final Object arr_done_all) {
         int[] work = (int[]) arr_done_all;
         progressbar.update(work[0], work[1]);
     }

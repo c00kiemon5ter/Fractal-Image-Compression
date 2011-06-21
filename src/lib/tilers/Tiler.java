@@ -10,5 +10,5 @@ public interface Tiler<T> {
      * @param t the object to tile
      * @return an array list holding the tiles of the object
      */
-    public ArrayList<T> tile(T t);
+    public ArrayList<T> tile(final T t);
 }

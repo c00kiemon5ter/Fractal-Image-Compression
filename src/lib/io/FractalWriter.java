@@ -29,7 +29,7 @@ public class FractalWriter {
 
     private DataOutputStream out;
 
-    public FractalWriter(OutputStream outstream) throws FileNotFoundException, IOException {
+    public FractalWriter(final OutputStream outstream) throws FileNotFoundException, IOException {
         this.out = new DataOutputStream(new BufferedOutputStream(outstream));
     }
 
@@ -42,7 +42,7 @@ public class FractalWriter {
      * @param fractalmodel
      * @throws IOException 
      */
-    public void write(Map<Point, Map.Entry<BufferedImage, ImageTransform>> fractalmodel) throws IOException {
+    public void write(final Map<Point, Map.Entry<BufferedImage, ImageTransform>> fractalmodel) throws IOException {
 
         for (Point point : fractalmodel.keySet()) {
             Map.Entry<BufferedImage, ImageTransform> entry = fractalmodel.get(point);

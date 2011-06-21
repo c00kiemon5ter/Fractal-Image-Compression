@@ -14,7 +14,7 @@ public class ImageComparator implements Distanceator<BufferedImage> {
         this(distanceMetric, 0);
     }
 
-    public ImageComparator(Metric distanceMetric, double fuzz) {
+    public ImageComparator(final Metric distanceMetric, final double fuzz) {
         assert (distanceMetric != null) && (fuzz >= 0);
 
         this.metric = distanceMetric;
@@ -22,7 +22,7 @@ public class ImageComparator implements Distanceator<BufferedImage> {
     }
 
     @Override
-    public double distance(BufferedImage img1, BufferedImage img2) {
+    public double distance(final BufferedImage img1, final BufferedImage img2) {
         assert (img1 != null) && (img2 != null);
 
         double distance = 0;
