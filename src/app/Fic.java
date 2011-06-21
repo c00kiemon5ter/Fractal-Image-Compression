@@ -6,6 +6,7 @@ import lib.Decompressor;
 import lib.comparators.ImageComparator;
 import lib.comparators.Metric;
 
+import lib.io.FractalWriter;
 import lib.io.ProgressBar;
 
 import lib.tilers.RectangularPixelTiler;
@@ -20,6 +21,7 @@ import lib.transformations.ScaleTransform;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import java.util.Arrays;
@@ -115,7 +117,7 @@ public class Fic implements Observer {
             
             Compressor compressor = new Compressor(
                                         new ScaleTransform(scalefactor, scalefactor),
-                                        new RectangularPixelTiler(xpixels, ypixels), 
+                                        new RectangularPixelTiler(8, 8), 
                                         new ImageComparator(metric, fuzz),
                                         new HashSet<ImageTransform>(5) {{
                                             add(new FlipTransform());
@@ -129,7 +131,7 @@ public class Fic implements Observer {
                 LOGGER.log(Level.INFO, ":: Starting compression .. ");
             }
 
-            compressor.compress(image);
+            new FractalWriter(new FileOutputStream(new File("data/test.out.frak"))).write(compressor.compress(image));
         } catch (IOException ex) {
             usage();
             System.err.println(Error.IMAGE_READ.description(inputfile.toString()));
