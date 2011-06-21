@@ -382,7 +382,7 @@ public class Fic implements Observer {
 
     @Override
     public void update(Observable observableSource, Object arr_done_all) {
-        int[] args = (int[]) arr_done_all;
-        progressbar.update(args[0], args[1]);
+        int[] work = (int[]) arr_done_all;
+        progressbar.update(work[0], work[1]);
     }
 }

@@ -27,7 +27,7 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
     public ArrayList<BufferedImage> tile(BufferedImage image) {
 
         // normalize image -- adjust size to blocks' width and height
-        int cols = image.getWidth() / blockwidth;
+        int cols = image.getWidth () / blockwidth;
         int rows = image.getHeight() / blockheight;
 
         assert (cols > 0) && (rows > 0) : String.format("Block sizes too big - width: %d - height: %d", blockwidth, blockheight);
@@ -45,4 +45,3 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
         return blockslist;
     }
 }
-//~ Formatted by Jindent --- http://www.jindent.com
