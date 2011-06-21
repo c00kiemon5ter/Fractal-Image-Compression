@@ -5,7 +5,10 @@ import lib.utils.PixelUtils;
 import java.awt.image.BufferedImage;
 
 /**
- * different metrics to count the distance of two integers representing pixels
+ * different metrics to count the distance of two integers representing pixels.<br />
+ * <br />
+ * NOTE: currently implemented: {@code AE MSE RMSE}<br />
+ * NOTE: currently only AE is affected by {@code fuzz}<br />
  *
  * @see #distance(int, int)
  * @see PixelUtils
@@ -19,6 +22,11 @@ public enum Metric {
      * Return 1 if pixels differ, 0 if there is no difference
      */
     AE {
+
+        @Override
+        public double distance(int a, int b, double fuzz) {
+            return super.distance(a, b) <= fuzz ? 0 : 1;
+        }
 
         @Override
         public double distance(int a, int b) {
@@ -121,8 +129,19 @@ public enum Metric {
     },;
 
     /**
-     * TODO: implement other metrics # all those returning 0
+     * @param a a pixel to compare to
+     * @param b a pixel to compare with
+     * @param fuzz color normalization factor
+     * @return the distance between the two integers as defined by the metric
      *
+     * @see Metric
+     * @see PixelUtils
+     */
+    public double distance(int a, int b, double fuzz) {
+        return distance(a, b);
+    }
+
+    /**
      * @param a a pixel to compare to
      * @param b a pixel to compare with
      * @return the distance between the two integers as defined by the metric
