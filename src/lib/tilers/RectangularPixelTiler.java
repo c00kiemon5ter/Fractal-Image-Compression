@@ -17,6 +17,8 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
      * @param blockheight the pixels each block will be in the y axle
      */
     public RectangularPixelTiler(int blockwidth, int blockheight) {
+        assert (blockheight > 0) && (blockwidth > 0);
+        
         this.blockwidth  = blockwidth;
         this.blockheight = blockheight;
     }
@@ -28,10 +30,7 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
         int cols = image.getWidth() / blockwidth;
         int rows = image.getHeight() / blockheight;
 
-        if ((cols == 0) || (rows == 0)) {
-            throw new IllegalArgumentException(String.format("Block sizes too big - width: %d - height: %d",
-                                                                                  blockwidth, blockheight));
-        }
+        assert (cols > 0) && (rows > 0) : String.format("Block sizes too big - width: %d - height: %d", blockwidth, blockheight);
 
         image = image.getSubimage(0, 0, cols * blockwidth, rows * blockheight);
 

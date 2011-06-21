@@ -86,11 +86,8 @@ public class Compressor {
                       final Distanceator<BufferedImage> comparator,
                       final Set<ImageTransform> transforms,
                       final Set<BufferedImageOp> filters) throws NullPointerException {
-
-        if ((scaleTransform == null) || (tiler == null) || (comparator == null) || 
-                (transforms == null) || (filters == null)) {
-            throw new NullPointerException("Null elements not allowed");
-        }
+        assert (comparator != null) && (transforms != null) && (filters != null)
+               && (tiler != null) && (scaleTransform != null) : "Null elements now allowed";
 
         this.comparator = comparator;
         this.tiler      = tiler;
@@ -123,6 +120,7 @@ public class Compressor {
      * @return a mapping of points to images and transforms.
      */
     public Map<Point, Map.Entry<BufferedImage, ImageTransform>> compress(BufferedImage image) {
+        assert image != null : "Cannot compress null image";
 
         /*
          * Normalization. Before tiling the image, pass it throw a set of filters.

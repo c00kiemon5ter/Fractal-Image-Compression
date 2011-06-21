@@ -15,12 +15,16 @@ public class ImageComparator implements Distanceator<BufferedImage> {
     }
 
     public ImageComparator(Metric distanceMetric, double fuzz) {
+        assert (distanceMetric != null) && (fuzz >= 0);
+        
         this.metric = distanceMetric;
         this.fuzz   = fuzz;
     }
 
     @Override
     public double distance(BufferedImage img1, BufferedImage img2) {
+        assert (img1 != null) && (img2 != null);
+        
         double distance = 0;
         int width  = img1.getWidth();
         int height = img1.getHeight();
