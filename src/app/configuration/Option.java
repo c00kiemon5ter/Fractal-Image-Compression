@@ -1,4 +1,4 @@
-package app;
+package app.configuration;
 
 import lib.comparators.Metric;
 

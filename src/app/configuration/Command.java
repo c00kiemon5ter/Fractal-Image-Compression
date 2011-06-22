@@ -1,4 +1,4 @@
-package app;
+package app.configuration;
 
 /**
  * Representation of the commands available to the app.
