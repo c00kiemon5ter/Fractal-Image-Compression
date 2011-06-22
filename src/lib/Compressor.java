@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import lib.core.FractalModel;
 
 /**
  * fractal compressor instance. combines the tiler and
@@ -122,7 +123,7 @@ public class Compressor extends Observable {
      * @param image the image to compress
      * @return a mapping of points to images and transforms.
      */
-    public Map<Point, Map.Entry<BufferedImage, ImageTransform>> compress(BufferedImage image) {
+    public FractalModel compress(BufferedImage image) {
         assert image != null : "Cannot compress null image";
 
         /*
@@ -213,15 +214,15 @@ public class Compressor extends Observable {
          * the original image.
          * We map each point to a corresponding domain image and transform.
          */
-        Map<Point, Map.Entry<BufferedImage, ImageTransform>> fractalmodel =
+        Map<Point, Map.Entry<BufferedImage, ImageTransform>> simplemodel =
             new HashMap<Point, Map.Entry<BufferedImage, ImageTransform>>(rangessize);
         int width = image.getWidth();
 
         for (BufferedImage range : range_domain_matches.keySet()) {
-            fractalmodel.put(Utils.indexToPoint(rangeblocks.indexOf(range), width),
+            simplemodel.put(Utils.indexToPoint(rangeblocks.indexOf(range), width),
                         domainblocks.get(range_domain_matches.get(range)));
         }
 
-        return fractalmodel;
+        return new FractalModel(simplemodel);
     }
 }
