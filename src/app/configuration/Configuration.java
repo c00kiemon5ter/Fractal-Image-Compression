@@ -19,6 +19,7 @@ import lib.comparators.Metric;
 /**
  * load the configuration
  *
+   TODO: form Fractal Writer and Reader - Externalizable interface
  * TODO: set all default properties
  * TODO: validate and store properties in correct type
  * TODO: add scale factor and pixel x/y options - remove quality

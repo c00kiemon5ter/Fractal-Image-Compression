@@ -56,8 +56,6 @@ public class Fic implements Observer, Runnable {
     public void run() {
         FractalModel fmodel;
 
-        // TODO: form Fractal Writer and Reader - Externalizable interface
-        // TODO: fix input and output streams
         switch (configuration.command()) {
             case COMPRESS :
                 fmodel = compress();
