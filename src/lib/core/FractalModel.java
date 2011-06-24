@@ -56,47 +56,27 @@ public class FractalModel {
          * for each point, extract the appropriate domain and transform
          */
         for (final Point point : simplemodel.keySet()) {
-            final Map.Entry<BufferedImage, ImageTransform> entry = simplemodel.get(point);
-            final BufferedImage  domain    = entry.getKey();
-            final ImageTransform transform = entry.getValue();
+            BufferedImage  domain    = simplemodel.get(point).getKey();
+            ImageTransform transform = simplemodel.get(point).getValue();
 
             /*
-             * if we've encountered that domain before, 
+             * if the domain is new to the model, add it and create
+             * a map for the transform and the range points.
              */
-            if (model.containsKey(domain)) {
-
+            if (!model.containsKey(domain)) {
+                model.put(domain, new HashMap<ImageTransform, Set<Point>>());
+                model.get(domain).put(transform, new HashSet<Point>());
+            } else if (!model.get(domain).containsKey(transform)) {
                 /*
-                 * search the list of transforms for that domain 
-                 * in the model, to find the current transform
+                 * if the domain is not new, but the transform is new,
+                 * add the trasform and create a map for the range points
                  */
-                if (model.get(domain).containsKey(transform)) {
-
-                    /*
-                     * if the transform is found, get the list 
-                     * of points and add the current point.
-                     */
-                    model.get(domain).get(transform).add(point);
-                } else {
-                    /*
-                     * if the transform isn't found, add it, create a new 
-                     * list of points for that transform and insert the point.
-                     */
-                    model.get(domain).put(transform, new HashSet<Point>() {{
-                        add(point);
-                    }});
-                }
-            } else {
-                /*
-                 * if it's the first time we see this domain then insert the domain,
-                 * create a new list of trasforms for that domain, insert the transform,
-                 * create a new list of points for that transform and insert the point.
-                 */
-                model.put(domain, new HashMap<ImageTransform, Set<Point>>() {{
-                    put(transform, new HashSet<Point>() {{
-                        add(point);
-                    }});
-                }});
+                model.get(domain).put(transform, new HashSet<Point>());
             }
+            /*
+             * finally add the point
+             */
+            model.get(domain).get(transform).add(point);
         }
     }
 
