@@ -11,7 +11,7 @@ public enum Error {
     MISSING_ARG("Missing argument for option: %s"),
     INVALID_VALUE("Invalid value for option: %s %s"),
     FILE_READ("Couldn't read file: %s"),
-    IMAGE_READ("Couldn't create image: %s"),;
+    STREAM_WRITE("Couldn't write to stream"),;
 
     private String description;
 
@@ -20,7 +20,6 @@ public enum Error {
     }
 
     /**
-     *
      * @return a description of the error
      */
     public String description() {
@@ -28,7 +27,6 @@ public enum Error {
     }
 
     /**
-     *
      * @param msg extra message to attach
      * @return a description of the error
      */
@@ -37,7 +35,6 @@ public enum Error {
     }
 
     /**
-     *
      * @param opt specify the option
      * @param val value of the option
      * @return a description of the error
@@ -47,7 +44,6 @@ public enum Error {
     }
 
     /**
-     *
      * @param num a number to attach
      * @return a description of the error
      */
@@ -58,6 +54,7 @@ public enum Error {
     /**
      * The error code representing the error.
      * This will change along with the ordering of the errors.
+     * 
      * @return the error's code
      */
     public int errcode() {
