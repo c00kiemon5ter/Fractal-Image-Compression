@@ -2,11 +2,14 @@ package app;
 
 import app.configuration.Configuration;
 
-import java.io.IOException;
-
 /**
  * Command line utility to compress an image using
  * fractal image compression methods.
+ * 
+ * TODO: create converters for options
+ * TODO: add configuration of filters and transforms
+ * TODO: fix fwriter.write() freader.read()
+ * TODO: implement decompressor
  */
 public class Application {
 
@@ -16,18 +19,9 @@ public class Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Configuration configuration = new Configuration();
-
-        try {
-            configuration.parse("data/fractal.conf", args);
-        } catch (IOException ioe) {
-            configuration.usage();
-            System.err.println(Error.FILE_READ.description("data/fractal.conf"));
-            System.exit(Error.FILE_READ.errcode());
-        }
-
+        Configuration configuration = new Configuration(args);
         Runnable fic = new Fic(configuration);
-        
+
         fic.run();
     }
 }
