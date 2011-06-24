@@ -8,7 +8,6 @@ import app.configuration.Configuration;
  * 
  * TODO: create converters for options
  * TODO: add configuration of filters and transforms
- * TODO: fix fwriter.write() freader.read()
  * TODO: implement decompressor
  */
 public class Application {

@@ -1,7 +1,8 @@
 package app;
 
 import app.configuration.Configuration;
-import java.io.FileNotFoundException;
+
+import com.jhlabs.image.GrayscaleFilter;
 
 import lib.Compressor;
 import lib.Decompressor;
@@ -11,7 +12,8 @@ import lib.comparators.ImageComparator;
 import lib.core.FractalModel;
 
 import lib.io.ProgressBar;
-
+import lib.io.FractalReader;
+import lib.io.FractalWriter;
 
 import lib.transformations.AffineRotateQuadrantsTransform;
 import lib.transformations.FlipTransform;
@@ -19,13 +21,12 @@ import lib.transformations.FlopTransform;
 import lib.transformations.ImageTransform;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.awt.image.BufferedImageOp;
 
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.HashSet;
@@ -35,8 +36,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
-import lib.io.FractalReader;
-import lib.io.FractalWriter;
 
 /**
  * The fic object is the main run system of the application.
@@ -152,7 +151,11 @@ public class Fic implements Observer, Runnable {
                     add(new AffineRotateQuadrantsTransform(1));
                     add(new AffineRotateQuadrantsTransform(2));
                     add(new AffineRotateQuadrantsTransform(3));
-                }}, this);
+                }}, 
+                new HashSet<BufferedImageOp>(1) {{
+                    add(new GrayscaleFilter());
+                }},
+                this);
 
         return compressor.compress(image);
     }
@@ -163,39 +166,33 @@ public class Fic implements Observer, Runnable {
         if (configuration.output() != null) {
             try {
                 out = new FileOutputStream(configuration.output());
-            } catch (FileNotFoundException ex) {
+            } catch (FileNotFoundException fnfe) {
                 System.err.println(Error.FILE_READ.description(configuration.output().getName()));
                 System.exit(Error.FILE_READ.errcode());
             }
         }
 
-        FractalWriter fwriter = new FractalWriter(new BufferedOutputStream(out));
-
         try {
+            FractalWriter fwriter = new FractalWriter(new BufferedOutputStream(out));
             fwriter.write(fmodel);
             fwriter.close();
-        } catch (IOException ex) {
+        } catch (IOException ioe) {
             System.err.println(Error.STREAM_WRITE.description());
             System.exit(Error.STREAM_WRITE.errcode());
         }
     }
 
     public FractalModel readModel() {
-        FractalReader freader = null;
-
-        try {
-            freader = new FractalReader(configuration.input());
-        } catch (FileNotFoundException ex) {
-            System.err.println(Error.FILE_READ.description(configuration.input().getName()));
-            System.exit(Error.FILE_READ.errcode());
-        }
-
         FractalModel fmodel = null;
 
         try {
+            FractalReader freader = new FractalReader(configuration.input());
             fmodel = freader.read();
             freader.close();
-        } catch (IOException ex) {
+        } catch (ClassNotFoundException cnfe) {
+            System.err.println(Error.FILE_READ.description(configuration.input().getName()));
+            System.exit(Error.FILE_READ.errcode());
+        } catch (IOException ioe) {
             System.err.println(Error.FILE_READ.description(configuration.input().getName()));
             System.exit(Error.FILE_READ.errcode());
         }
@@ -215,7 +212,7 @@ public class Fic implements Observer, Runnable {
         if (configuration.output() != null) {
             try {
                 out = new FileOutputStream(configuration.output());
-            } catch (FileNotFoundException ex) {
+            } catch (FileNotFoundException fnfe) {
                 System.err.println(Error.FILE_READ.description(configuration.output().getName()));
                 System.exit(Error.FILE_READ.errcode());
             }
@@ -223,7 +220,7 @@ public class Fic implements Observer, Runnable {
 
         try {
             ImageIO.write(image, "PNG", new BufferedOutputStream(out));
-        } catch (IOException ex) {
+        } catch (IOException ioe) {
             System.err.println(Error.STREAM_WRITE.description());
             System.exit(Error.STREAM_WRITE.errcode());
         }
