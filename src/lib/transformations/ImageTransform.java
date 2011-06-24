@@ -3,11 +3,12 @@ package lib.transformations;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 /**
  * Produces transformed copies of a given input image.
  */
-public abstract class ImageTransform implements Transformer<BufferedImage> {
+public abstract class ImageTransform implements Transformer<BufferedImage>, Serializable {
 
     /**
      * The Affine transform theory:

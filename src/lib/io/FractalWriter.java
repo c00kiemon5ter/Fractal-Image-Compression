@@ -1,8 +1,11 @@
 package lib.io;
 
+import java.awt.image.BufferedImage;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import javax.imageio.ImageIO;
 
 import lib.core.FractalModel;
 
@@ -13,24 +16,31 @@ import lib.core.FractalModel;
  */
 public class FractalWriter {
 
-    private DataOutputStream out;
+    private ObjectOutputStream out;
 
     /**
      * @param outstream the stream to write the fractal model to
      * 
-     * @see DataOutputStream
+     * @throws IOException 
+     * 
+     * @see ObjectOutputStream
      */
-    public FractalWriter(final OutputStream outstream) {
-        this.out = new DataOutputStream(outstream);
+    public FractalWriter(final OutputStream outstream) throws IOException {
+        this.out = new ObjectOutputStream(outstream);
     }
 
     /**
      * Write a representation of the fractal model to an output stream
      *
-     * @param fmodel
+     * @param fmodel the fractal model to write to the stream
+     * 
+     * @throws IOException  
      */
-    public void write(FractalModel fmodel) {
-        throw new UnsupportedOperationException("not supported yet");
+    public void write(FractalModel fmodel) throws IOException {
+        for (BufferedImage domain : fmodel.getModel().keySet()) {
+            ImageIO.write(domain, "PNG", this.out);
+            this.out.writeObject(fmodel.getModel().get(domain));
+        }
     }
 
     /**
