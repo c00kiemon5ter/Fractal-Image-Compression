@@ -44,6 +44,10 @@ public class FractalModel {
 
     Map<BufferedImage, Map<ImageTransform, Set<Point>>> model;
 
+    public FractalModel() {
+        this.model = new HashMap<BufferedImage, Map<ImageTransform, Set<Point>>>();
+    }
+
     public FractalModel(Map<Point, Map.Entry<BufferedImage, ImageTransform>> simplemodel) {
         model = new HashMap<BufferedImage, Map<ImageTransform, Set<Point>>>();
 
@@ -78,6 +82,12 @@ public class FractalModel {
              */
             model.get(domain).get(transform).add(point);
         }
+    }
+
+    public boolean add(Map.Entry<BufferedImage, Map<ImageTransform, Set<Point>>> entry) {
+        model.put(entry.getKey(), entry.getValue());
+
+        return false;
     }
 
     public Map<BufferedImage, Map<ImageTransform, Set<Point>>> getModel() {
