@@ -1,6 +1,7 @@
 package app;
 
 import app.configuration.Configuration;
+import java.io.FileNotFoundException;
 
 import lib.Compressor;
 import lib.Decompressor;
@@ -11,16 +12,17 @@ import lib.core.FractalModel;
 
 import lib.io.ProgressBar;
 
-import lib.tilers.RectangularPixelTiler;
 
 import lib.transformations.AffineRotateQuadrantsTransform;
 import lib.transformations.FlipTransform;
 import lib.transformations.FlopTransform;
-import lib.transformations.GrayscaleFilter;
 import lib.transformations.ImageTransform;
-import lib.transformations.ScaleTransform;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,40 +35,81 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import lib.io.FractalReader;
+import lib.io.FractalWriter;
 
 /**
- * The fic object is an instance of the application.
- *
+ * The fic object is the main run system of the application.
+ * Fic handles the interpretation of the configuration, 
+ * runs the appropriate commands with the appropriate values.
  */
 public class Fic implements Observer, Runnable {
 
     private static final Logger LOGGER = Logger.getLogger("debugger");
-    private Configuration       configuration;
-    private ProgressBar         progressbar;
+    private Configuration configuration;
+    private ProgressBar progressbar;
 
     /**
-     * @param configuration the configuration
+     * @param configuration the configuration options
      */
     public Fic(Configuration configuration) {
         this.configuration = configuration;
-        this.progressbar   = new ProgressBar();
+        this.progressbar = new ProgressBar();
     }
 
     @Override
     public void run() {
         FractalModel fmodel;
+        BufferedImage image;
+
+        if (configuration.debug()) {
+            LOGGER.log(Level.INFO, String.format(":: Initializing %s process ..",
+                                                 configuration.command().id()));
+        }
 
         switch (configuration.command()) {
-            case COMPRESS :
-                fmodel = compress();
-                writeModel(fmodel, null);
-            case DECOMPRESS :
-                fmodel = readModel(null);
-                decompress(fmodel);
-            default :
-                configuration.usage();
-                System.err.println(Error.UNKNOWN_ARG.description(configuration.command().toString()));
-                System.exit(Error.UNKNOWN_ARG.errcode());
+            case COMPRESS:
+                if (configuration.debug()) {
+                    LOGGER.log(Level.INFO, String.format(":: Reading image: %s",
+                                                         configuration.input().getName()));
+                }
+
+                image = readImage();
+
+                if (configuration.debug()) {
+                    LOGGER.log(Level.INFO, ":: Starting compression ..");
+                }
+
+                fmodel = compress(image);
+
+                if (configuration.debug()) {
+                    LOGGER.log(Level.INFO, ":: Writing to stream ..");
+                }
+
+                writeModel(fmodel);
+
+                break;
+            case DECOMPRESS:
+                if (configuration.debug()) {
+                    LOGGER.log(Level.INFO, ":: Reading compressed file: %s",
+                               configuration.input().getName());
+                }
+
+                fmodel = readModel();
+
+                if (configuration.debug()) {
+                    LOGGER.log(Level.INFO, ":: Starting decompression ..");
+                }
+
+                image = decompress(fmodel);
+
+                if (configuration.debug()) {
+                    LOGGER.log(Level.INFO, ":: Writing to stream ..");
+                }
+
+                writeImage(image);
+
+                break;
         }
     }
 
@@ -85,25 +128,23 @@ public class Fic implements Observer, Runnable {
         progressbar.update(work[0], work[1]);
     }
 
-    public FractalModel compress() {
-        if (configuration.verbose()) {
-            LOGGER.log(Level.INFO, ":: Initializing compress process..");
-        }
-
+    private BufferedImage readImage() {
         BufferedImage image = null;
 
         try {
-            image = new GrayscaleFilter().transform(ImageIO.read(configuration.inputfile()));
-        } catch (IOException ex) {
-            configuration.usage();
-            System.err.println(Error.IMAGE_READ.description(configuration.inputfile().toString()));
-            System.err.println(ex);
-            System.exit(Error.IMAGE_READ.errcode());
+            image = ImageIO.read(configuration.input());
+        } catch (IOException ioe) {
+            System.err.println(Error.FILE_READ.description(configuration.input().getName()));
+            System.exit(Error.FILE_READ.errcode());
         }
 
+        return image;
+    }
+
+    public FractalModel compress(BufferedImage image) {
         Compressor compressor = new Compressor(
-                new ScaleTransform(configuration.scalex(), configuration.scaley()), 
-                new RectangularPixelTiler(configuration.xpixels(), configuration.ypixels()),
+                configuration.domainScale(),
+                configuration.tiler(),
                 new ImageComparator(configuration.metric(), configuration.fuzz()),
                 new HashSet<ImageTransform>(5) {{
                     add(new FlipTransform());
@@ -113,27 +154,78 @@ public class Fic implements Observer, Runnable {
                     add(new AffineRotateQuadrantsTransform(3));
                 }}, this);
 
-        if (configuration.verbose()) {
-            LOGGER.log(Level.INFO, ":: Starting compression .. ");
-        }
-
         return compressor.compress(image);
     }
 
-    public void decompress(FractalModel fmodel) {
-        if (configuration.verbose()) {
-            LOGGER.log(Level.INFO, ":: Initializing decompress process..");
+    public void writeModel(FractalModel fmodel) {
+        OutputStream out = System.out;
+
+        if (configuration.output() != null) {
+            try {
+                out = new FileOutputStream(configuration.output());
+            } catch (FileNotFoundException ex) {
+                System.err.println(Error.FILE_READ.description(configuration.output().getName()));
+                System.exit(Error.FILE_READ.errcode());
+            }
         }
 
+        FractalWriter fwriter = new FractalWriter(new BufferedOutputStream(out));
+
+        try {
+            fwriter.write(fmodel);
+            fwriter.close();
+        } catch (IOException ex) {
+            System.err.println(Error.STREAM_WRITE.description());
+            System.exit(Error.STREAM_WRITE.errcode());
+        }
+    }
+
+    public FractalModel readModel() {
+        FractalReader freader = null;
+
+        try {
+            freader = new FractalReader(configuration.input());
+        } catch (FileNotFoundException ex) {
+            System.err.println(Error.FILE_READ.description(configuration.input().getName()));
+            System.exit(Error.FILE_READ.errcode());
+        }
+
+        FractalModel fmodel = null;
+
+        try {
+            fmodel = freader.read();
+            freader.close();
+        } catch (IOException ex) {
+            System.err.println(Error.FILE_READ.description(configuration.input().getName()));
+            System.exit(Error.FILE_READ.errcode());
+        }
+
+        return fmodel;
+    }
+
+    public BufferedImage decompress(FractalModel fmodel) {
         Decompressor decompressor = new Decompressor();
-        decompressor.decompress(fmodel);
+
+        return decompressor.decompress(fmodel);
     }
 
-    public void writeModel(FractalModel model, OutputStream outstream) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
+    private void writeImage(BufferedImage image) {
+        OutputStream out = System.out;
 
-    public FractalModel readModel(InputStream instream) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (configuration.output() != null) {
+            try {
+                out = new FileOutputStream(configuration.output());
+            } catch (FileNotFoundException ex) {
+                System.err.println(Error.FILE_READ.description(configuration.output().getName()));
+                System.exit(Error.FILE_READ.errcode());
+            }
+        }
+
+        try {
+            ImageIO.write(image, "PNG", new BufferedOutputStream(out));
+        } catch (IOException ex) {
+            System.err.println(Error.STREAM_WRITE.description());
+            System.exit(Error.STREAM_WRITE.errcode());
+        }
     }
 }
