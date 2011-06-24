@@ -168,9 +168,13 @@ public class Compressor extends Observable {
             }
         }
 
-        /* A mapping between a range and most suitable domain block */
-        Map<BufferedImage, BufferedImage> range_domain_matches =
-            new HashMap<BufferedImage, BufferedImage>(rangessize);
+        /* mapping between a range position and
+         * most suitable domainblock and transform
+         * that produce that range
+         */
+        Map<Point, Map.Entry<BufferedImage, ImageTransform>> simplemodel =
+            new HashMap<Point, Map.Entry<BufferedImage, ImageTransform>>(rangessize);
+        int width = image.getWidth();
 
         /*
          * After the end of each domain loop, or in other words, before
@@ -180,13 +184,18 @@ public class Compressor extends Observable {
          * and the domain image along with its distance. We hold the best
          * (minimum) distance found so far, in the a variable, which is
          * reset in every range image iteration.
+         *
+         * for each rangeblock, compare it to each domainblock
+         * if the difference is smaller than the best current
+         * then add the rangeblock's position and appropriate
+         * domainblock and transformation.
          */
         for (int rangeidx = 0; rangeidx < rangessize; rangeidx++) {
-            BufferedImage rangeblock = rangeblocks.get(rangeidx);
+            final Point rangepoint = Utils.indexToPoint(rangeidx, width);
             double mindiff = Double.MAX_VALUE;
 
-            for (BufferedImage domainblock : domainblocks.keySet()) {
-                double diff = comparator.distance(rangeblock, domainblock);
+            for (final BufferedImage domainblock : domainblocks.keySet()) {
+                double diff = comparator.distance(rangeblocks.get(rangeidx), domainblock);
 
                 /*
                  * If we haven't seen the image before (which means
@@ -197,30 +206,14 @@ public class Compressor extends Observable {
                  * than the best (minimum) so far), we update the best
                  * difference and map the range to the new domain image.
                  */
-                if (!range_domain_matches.containsKey(rangeblock) || (mindiff > diff)) {
-                    range_domain_matches.put(rangeblock, domainblock);
+                if (!simplemodel.containsKey(rangepoint) || (mindiff > diff)) {
+                    simplemodel.put(rangepoint, domainblocks.get(domainblock));
                     mindiff = diff;
                 }
             }
 
             this.setChanged();
             this.notifyObservers(new int[]{rangeidx, rangessize});
-        }
-
-        /*
-         * All matches are found. We now need the original domain block(1),
-         * the transform(2) needed to be applied to get the range image and
-         * a point(3) which represents the position of the range image in
-         * the original image.
-         * We map each point to a corresponding domain image and transform.
-         */
-        Map<Point, Map.Entry<BufferedImage, ImageTransform>> simplemodel =
-            new HashMap<Point, Map.Entry<BufferedImage, ImageTransform>>(rangessize);
-        int width = image.getWidth();
-
-        for (BufferedImage range : range_domain_matches.keySet()) {
-            simplemodel.put(Utils.indexToPoint(rangeblocks.indexOf(range), width),
-                        domainblocks.get(range_domain_matches.get(range)));
         }
 
         return new FractalModel(simplemodel);
