@@ -52,4 +52,9 @@ public class ScaleTransform extends ImageTransform {
     public double getScaley() {
         return scaley;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%.2f:%.2f", scalex, scaley);
+    }
 }

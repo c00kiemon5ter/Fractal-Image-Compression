@@ -47,6 +47,6 @@ public class RectangularPixelTiler implements Tiler<BufferedImage> {
 
     @Override
     public String toString() {
-        return String.format("%d %d", blockwidth, blockheight);
+        return String.format("%dx%d", blockwidth, blockheight);
     }
 }

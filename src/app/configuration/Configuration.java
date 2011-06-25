@@ -6,12 +6,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 import lib.comparators.Metric;
-
-import lib.tilers.Tiler;
-
 import lib.transformations.ScaleTransform;
-
-import java.awt.image.BufferedImage;
+import lib.tilers.RectangularPixelTiler;
 
 import java.io.File;
 
@@ -41,46 +37,38 @@ public class Configuration {
         try {
             parser.parse(arguments);
         } catch (ParameterException pe) {
-
-            /*
-             * if help was requested
-             * print usage and
-             * exit successfully
-             */
-            if (options.help) {
-                selectUsage();
-                System.exit(0);
-            }
-
-            /*
-             * else print usage
-             * print the error message
-             * and exit with fail code
-             */
-            parser.usage();
+            selectUsage(parser.getParsedCommand());
             System.err.println(pe.getMessage());
-            System.exit(1);
+            System.exit(options.help ? 0 : 1);
         }
+
+        String cmd = parser.getParsedCommand();
 
         /*
          * even if there was not a parsing error
          * help could still have been requested
          */
         if (options.help) {
-            selectUsage();
+            selectUsage(cmd);
             System.exit(0);
         }
 
-        command = Commands.valueOf(parser.getParsedCommand().toUpperCase());
+        if (cmd != null) {
+            command = Commands.valueOf(cmd.toUpperCase());
+        } else {
+            parser.usage();
+            System.err.println(app.Error.REQUIRED_ARG_NOT_FOUND.description("<command>"));
+            System.exit(1);
+        }
     }
 
     /**
      * if a command was parsed, show
      * the usage for that command
      */
-    private void selectUsage() {
-        if (parser.getParsedCommand() != null) {
-            parser.usage(parser.getParsedCommand());
+    private void selectUsage(String cmd) {
+        if (cmd != null) {
+            parser.usage(cmd);
         } else {
             parser.usage();
         }
@@ -106,7 +94,7 @@ public class Configuration {
         return options.domainScale;
     }
 
-    public Tiler<BufferedImage> tiler() {
+    public RectangularPixelTiler tiler() {
         return options.tiler;
     }
 

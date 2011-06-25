@@ -19,12 +19,12 @@ public enum Commands {
                hidden      = true)
     DECOMPRESS;
 
-    @Parameter(names = {"-i", "--input"}, 
+    @Parameter(names       = {"-i", "--input"}, 
                description = "the input file", 
-               required = true)
+               required    = true)
     protected File input;
 
-    @Parameter(names = {"-o", "--output"}, 
+    @Parameter(names       = {"-o", "--output"}, 
                description = "the output file")
     protected File output;
 
