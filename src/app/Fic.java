@@ -86,8 +86,8 @@ public class Fic implements Observer, Runnable {
                 break;
             case DECOMPRESS:
                 if (configuration.debug()) {
-                    LOGGER.log(Level.INFO, ":: Reading compressed file: %s",
-                               configuration.input().getName());
+                    LOGGER.log(Level.INFO, String.format(":: Reading compressed file: %s",
+                                                         configuration.input().getName()));
                 }
 
                 fmodel = readModel();

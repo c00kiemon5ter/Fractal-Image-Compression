@@ -42,7 +42,7 @@ public class Compressor extends Observable {
      * @param tiler the tiler used to tile the image
      * @param comparator the comparator used to compare the tiles of the image
      * @param transforms a list of transform to apply to the tiles of the image
-     * @param observer an observer receiving progress results from {@code compress} - allowed to be null
+     * @param observer an observer receiving progress results for the compression - allowed to be null
      *
      * @throws NullPointerException if any field is null
      *

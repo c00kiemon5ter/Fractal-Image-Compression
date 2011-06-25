@@ -7,7 +7,6 @@ import app.configuration.Configuration;
  * fractal image compression methods.
  * 
  * TODO: add configuration of filters and transforms
- * TODO: implement decompressor
  */
 public class Application {
 
