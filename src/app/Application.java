@@ -6,7 +6,6 @@ import app.configuration.Configuration;
  * Command line utility to compress an image using
  * fractal image compression methods.
  * 
- * TODO: validate arguments
  * TODO: add configuration of filters and transforms
  * TODO: implement decompressor
  */
