@@ -1,5 +1,6 @@
 package app.configuration;
 
+import app.configuration.validators.FileExistsValidator;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import java.io.File;
@@ -10,22 +11,23 @@ import java.io.File;
 @Parameters(commandDescription = "compress and decompress commands")
 public enum Commands {
 
-    @Parameter(names       = "compress", 
-               description = "compress the given image",
-               hidden      = true)
+    @Parameter(names        = "compress", 
+               description  = "compress the given image",
+               hidden       = true)
     COMPRESS,
-    @Parameter(names       = "decompress",
-               description = "decompress the given file",
-               hidden      = true)
+    @Parameter(names        = "decompress",
+               description  = "decompress the given file",
+               hidden       = true)
     DECOMPRESS;
 
-    @Parameter(names       = {"-i", "--input"}, 
-               description = "the input file", 
-               required    = true)
+    @Parameter(names        = {"-i", "--input"}, 
+               description  = "the input file", 
+               required     = true,
+               validateWith = FileExistsValidator.class)
     protected File input;
 
-    @Parameter(names       = {"-o", "--output"}, 
-               description = "the output file")
+    @Parameter(names        = {"-o", "--output"}, 
+               description  = "the output file")
     protected File output;
 
     /**

@@ -1,5 +1,7 @@
 package app.configuration.converters;
 
+import app.configuration.Options;
+
 import com.beust.jcommander.IStringConverter;
 import lib.tilers.RectangularPixelTiler;
 
@@ -12,7 +14,7 @@ public class PixelTilerConverter implements IStringConverter<RectangularPixelTil
 
     @Override
     public RectangularPixelTiler convert(String arg) {
-        String[] wh = arg.split("x");
+        String[] wh = arg.split(Options.tilerdelimit);
         return new RectangularPixelTiler(Integer.parseInt(wh[0]), Integer.parseInt(wh[1]));
     }
 }

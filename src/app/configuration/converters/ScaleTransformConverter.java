@@ -1,5 +1,7 @@
 package app.configuration.converters;
 
+import app.configuration.Options;
+
 import com.beust.jcommander.IStringConverter;
 import lib.transformations.ScaleTransform;
 
@@ -12,7 +14,7 @@ public class ScaleTransformConverter implements IStringConverter<ScaleTransform>
 
     @Override
     public ScaleTransform convert(String arg) {
-        String[] sf = arg.split(":");
+        String[] sf = arg.split(Options.scaledelimit);
         return new ScaleTransform(Double.parseDouble(sf[0]), Double.parseDouble(sf[1]));
     }
 }
