@@ -6,15 +6,11 @@ import com.jhlabs.image.GrayscaleFilter;
 
 import lib.Compressor;
 import lib.Decompressor;
-
 import lib.comparators.ImageComparator;
-
 import lib.core.FractalModel;
-
 import lib.io.ProgressBar;
 import lib.io.FractalReader;
 import lib.io.FractalWriter;
-
 import lib.transformations.AffineRotateQuadrantsTransform;
 import lib.transformations.FlipTransform;
 import lib.transformations.FlopTransform;
@@ -201,12 +197,12 @@ public class Fic implements Observer, Runnable {
     }
 
     public BufferedImage decompress(FractalModel fmodel) {
-        Decompressor decompressor = new Decompressor();
+        Decompressor decompressor = new Decompressor(this);
 
         return decompressor.decompress(fmodel);
     }
 
-    private void writeImage(BufferedImage image) {
+    public void writeImage(BufferedImage image) {
         OutputStream out = System.out;
 
         if (configuration.output() != null) {
