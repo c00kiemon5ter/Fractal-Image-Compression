@@ -51,6 +51,7 @@ public class FractalReader {
     public FractalModel read() throws ClassNotFoundException {
         FractalModel fmodel = new FractalModel();
 
+        // FIXME: when do we stop reading ? is an exception raised at that point ?
         while (true) {
             try {
                 BufferedImage domain = ImageIO.read(this.in);

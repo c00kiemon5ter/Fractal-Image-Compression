@@ -38,9 +38,6 @@ public class Compressor extends Observable {
     private Set<BufferedImageOp>        filters;
 
     /**
-     *
-     * NOTE: the current compressor cannot handle scale transforms
-     *
      * @param scaleTransform the scale difference between the ranges and the domains
      * @param tiler the tiler used to tile the image
      * @param comparator the comparator used to compare the tiles of the image
@@ -63,9 +60,6 @@ public class Compressor extends Observable {
     }
 
     /**
-     *
-     * NOTE: the current compressor cannot handle scale transforms
-     *
      * @param scaleTransform the scale difference between the ranges and the domains
      * @param tiler the tiler used to tile the image
      * @param comparator the comparator used to compare the tiles of the image
@@ -117,8 +111,6 @@ public class Compressor extends Observable {
      * small images and transforms to points. Applying the transforms
      * to the images and placing the resulted transformed images
      * to the mapped points, the original image is reassembled.
-     *
-     * NOTE: the current compressor cannot handle scale transforms
      *
      * @param image the image to compress
      * @return a mapping of points to images and transforms.
