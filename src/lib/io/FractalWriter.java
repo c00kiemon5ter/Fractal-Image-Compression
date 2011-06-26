@@ -37,10 +37,7 @@ public class FractalWriter {
      * @throws IOException  
      */
     public void write(FractalModel fmodel) throws IOException {
-        for (BufferedImage domain : fmodel.getModel().keySet()) {
-            ImageIO.write(domain, "PNG", this.out);
-            this.out.writeObject(fmodel.getModel().get(domain));
-        }
+        this.out.writeObject(fmodel);
     }
 
     /**
