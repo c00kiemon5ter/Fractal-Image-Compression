@@ -142,7 +142,7 @@ public class Fic implements Observer, Runnable {
                 configuration.domainScale(),
                 configuration.tiler(),
                 new ImageComparator(configuration.metric(), configuration.fuzz()),
-                new HashSet<ImageTransform>(5) {{
+                new HashSet<ImageTransform>(6) {{
                     add(new NoneTransform());
                     add(new FlipTransform());
                     add(new FlopTransform());

@@ -6,9 +6,6 @@ import java.awt.image.BufferedImage;
 
 /**
  * different metrics to count the distance of two integers representing pixels.<br />
- * <br />
- * NOTE: currently implemented: {@code AE MSE RMSE}<br />
- * NOTE: currently only AE is affected by {@code fuzz}<br />
  *
  * @see #distance(int, int)
  * @see PixelUtils

@@ -21,6 +21,17 @@ public class ImageComparator implements Distanceator<BufferedImage> {
         this.fuzz   = fuzz;
     }
 
+    /**
+     * Measure the distance between two images as defined by the pre-defined metric
+     * 
+     * NOTE: the images must have the same size!
+     * 
+     * @param img1 the first image to compare to
+     * @param img2 the second image to compare with
+     * @return the distance between the images
+     * 
+     * @see Metric
+     */
     @Override
     public double distance(final BufferedImage img1, final BufferedImage img2) {
         assert (img1 != null) && (img2 != null);

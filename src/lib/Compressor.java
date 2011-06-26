@@ -25,8 +25,6 @@ import lib.utils.Utils;
 /**
  * fractal compressor instance. combines the tiler and
  * comparator classes to create a fractal image model
- *
- * NOTE: the current compressor cannot handle scale transforms
  */
 public class Compressor extends Observable {
 
