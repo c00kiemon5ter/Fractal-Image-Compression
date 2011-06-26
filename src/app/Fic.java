@@ -157,19 +157,8 @@ public class Fic implements Observer, Runnable {
     }
 
     public void writeModel(FractalModel fmodel) {
-        OutputStream out = System.out;
-
-        if (configuration.output() != null) {
-            try {
-                out = new FileOutputStream(configuration.output());
-            } catch (FileNotFoundException fnfe) {
-                System.err.println(Error.FILE_READ.description(configuration.output().getName()));
-                System.exit(Error.FILE_READ.errcode());
-            }
-        }
-
         try {
-            FractalWriter fwriter = new FractalWriter(new BufferedOutputStream(out));
+            FractalWriter fwriter = new FractalWriter(new BufferedOutputStream(getOutStream()));
             fwriter.write(fmodel);
             fwriter.close();
         } catch (IOException ioe) {
@@ -203,6 +192,15 @@ public class Fic implements Observer, Runnable {
     }
 
     public void writeImage(BufferedImage image) {
+        try {
+            ImageIO.write(image, "PNG", new BufferedOutputStream(getOutStream()));
+        } catch (IOException ioe) {
+            System.err.println(Error.STREAM_WRITE.description());
+            System.exit(Error.STREAM_WRITE.errcode());
+        }
+    }
+    
+    private OutputStream getOutStream() {
         OutputStream out = System.out;
 
         if (configuration.output() != null) {
@@ -214,11 +212,6 @@ public class Fic implements Observer, Runnable {
             }
         }
 
-        try {
-            ImageIO.write(image, "PNG", new BufferedOutputStream(out));
-        } catch (IOException ioe) {
-            System.err.println(Error.STREAM_WRITE.description());
-            System.exit(Error.STREAM_WRITE.errcode());
-        }
+        return out;
     }
 }
