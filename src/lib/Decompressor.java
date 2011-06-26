@@ -68,7 +68,7 @@ public class Decompressor extends Observable {
         int ranges = 0;
         for (Point point : simplemodel.keySet()) {
             BufferedImage range = simplemodel.get(point);
-            graphics.drawImage(range, point.x * blockwidth, point.y * blockheight, null);
+            graphics.drawImage(range, point.y * blockheight, point.x * blockwidth, null);
 
             this.setChanged();
             this.notifyObservers(new int[]{ranges++, simplemodel.size()});
