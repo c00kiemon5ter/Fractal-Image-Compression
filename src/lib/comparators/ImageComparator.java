@@ -25,7 +25,6 @@ public class ImageComparator implements Distanceator<BufferedImage> {
     public double distance(final BufferedImage img1, final BufferedImage img2) {
         assert (img1 != null) && (img2 != null);
 
-        double distance = 0;
         int width  = img1.getWidth();
         int height = img1.getHeight();
         int area   = width * height;
@@ -35,12 +34,13 @@ public class ImageComparator implements Distanceator<BufferedImage> {
         img1.getRGB(0, 0, width, height, img1pixels, 0, 0);
         img2.getRGB(0, 0, width, height, img2pixels, 0, 0);
 
+        double distance = 0;
+
         for (int pixelrow = 0; pixelrow < height; pixelrow++) {
             for (int pixelcol = 0; pixelcol < width; pixelcol++) {
-                int pixel1 = img1pixels[pixelrow * width + pixelcol];
-                int pixel2 = img1pixels[pixelrow * width + pixelcol];
-
-                distance += metric.distance(pixel1, pixel2, fuzz);
+                distance += metric.distance(img1pixels[pixelrow * width + pixelcol], 
+                                            img2pixels[pixelrow * width + pixelcol], 
+                                            fuzz);
             }
         }
 
