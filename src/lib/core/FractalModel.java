@@ -11,10 +11,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-
-import lib.Compressor;
 
 /**
  * a fractal model represents the compressed form of the image.<br />
@@ -39,23 +36,23 @@ import lib.Compressor;
  * {@code ....... ............. .[ Point5 ]] }<br />
  * <br />
  * in other words, instead of storing for each range the transform <br />
- * and the domain, we store the domain once, along with a list of <br />
- * transforms, with each transform, we store a list of points that <br />
+ * and the domain, we store the domain once, along with a set of   <br />
+ * transforms, with each transform, we store a set of points that  <br />
  * represent the position of the ranges in the original image.
  * 
  * @see Compressor
  */
 public class FractalModel implements Serializable {
 
-    private Map<ImageHolder, Map<ImageTransform, Set<Point>>> model;
+    private Map<ImageHolder, Map<ImageTransform, Set<Point>>> fmodel;
 
     public FractalModel(Map<Point, Map.Entry<BufferedImage, ImageTransform>> simplemodel) {
-        model = new HashMap<ImageHolder, Map<ImageTransform, Set<Point>>>();
+        fmodel = new HashMap<ImageHolder, Map<ImageTransform, Set<Point>>>();
 
         analyze(simplemodel);
     }
 
-    private void analyze(Map<Point, Entry<BufferedImage, ImageTransform>> simplemodel) {
+    private void analyze(Map<Point, Map.Entry<BufferedImage, ImageTransform>> simplemodel) {
 
         /*
          * for each point, extract the appropriate domain and transform
@@ -68,24 +65,26 @@ public class FractalModel implements Serializable {
              * if the domain is new to the model, add it and create
              * a map for the transform and the range points.
              */
-            if (!model.containsKey(domain)) {
-                model.put(domain, new HashMap<ImageTransform, Set<Point>>());
-                model.get(domain).put(transform, new HashSet<Point>());
-            } else if (!model.get(domain).containsKey(transform)) {
+            if (!fmodel.containsKey(domain)) {
+                fmodel.put(domain, new HashMap<ImageTransform, Set<Point>>());
+                fmodel.get(domain).put(transform, new HashSet<Point>());
+            } else if (!fmodel.get(domain).containsKey(transform)) {
+
                 /*
                  * if the domain is not new, but the transform is new,
                  * add the trasform and create a map for the range points
                  */
-                model.get(domain).put(transform, new HashSet<Point>());
+                fmodel.get(domain).put(transform, new HashSet<Point>());
             }
+
             /*
              * finally add the point
              */
-            model.get(domain).get(transform).add(point);
+            fmodel.get(domain).get(transform).add(point);
         }
     }
 
     public Map<ImageHolder, Map<ImageTransform, Set<Point>>> getModel() {
-        return model;
+        return fmodel;
     }
 }

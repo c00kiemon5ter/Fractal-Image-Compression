@@ -9,32 +9,32 @@ import java.awt.image.BufferedImage;
  */
 public class FlipTransform extends ImageTransform {
 
-	private boolean preserveAlpha;
+    private boolean preserveAlpha;
 
-	public FlipTransform(final boolean preserveAlpha) {
-		this.preserveAlpha = preserveAlpha;
-	}
+    public FlipTransform(final boolean preserveAlpha) {
+        this.preserveAlpha = preserveAlpha;
+    }
 
-	public FlipTransform() {
-		this(false);
-	}
+    public FlipTransform() {
+        this(false);
+    }
 
-	@Override
-	public BufferedImage transform(final BufferedImage inputimage) {
-		int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-		BufferedImage flippedImg = new BufferedImage(inputimage.getWidth(),
-													inputimage.getHeight(), imageType);
-        
-		Graphics2D graphics = flippedImg.createGraphics();
-		if (preserveAlpha) {
-			graphics.setComposite(AlphaComposite.Src);
-		}
-		graphics.drawImage(inputimage,
-						   inputimage.getWidth(), 0, 0, inputimage.getHeight(),
-						   0, 0, inputimage.getWidth(), inputimage.getHeight(),
-						   null);
-		graphics.dispose();
-        
-		return flippedImg;
-	}
+    @Override
+    public BufferedImage transform(final BufferedImage inputimage) {
+        int imageType = preserveAlpha ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+        BufferedImage flippedImg = new BufferedImage(inputimage.getWidth(),
+                                                     inputimage.getHeight(), imageType);
+
+        Graphics2D graphics = flippedImg.createGraphics();
+        if (preserveAlpha) {
+            graphics.setComposite(AlphaComposite.Src);
+        }
+        graphics.drawImage(inputimage,
+                           inputimage.getWidth(), 0, 0, inputimage.getHeight(),
+                           0, 0, inputimage.getWidth(), inputimage.getHeight(),
+                           null);
+        graphics.dispose();
+
+        return flippedImg;
+    }
 }

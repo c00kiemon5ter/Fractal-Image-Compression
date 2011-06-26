@@ -1,11 +1,9 @@
 package lib.io;
 
-import java.awt.image.BufferedImage;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import javax.imageio.ImageIO;
 
 import lib.core.FractalModel;
 

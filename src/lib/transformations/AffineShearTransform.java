@@ -9,29 +9,29 @@ import java.awt.image.BufferedImage;
  */
 public class AffineShearTransform extends ImageTransform {
 
-	private double shearx, sheary;
-	private int interpolationType;
+    private double shearx, sheary;
+    private int interpolationType;
 
-	/**
-	 * 
-	 * @param shearx the multiplier by which coordinates are shifted in the 
-	 * direction of the positive X axis as a factor of their Y coordinate
-	 * @param sheary the multiplier by which coordinates are shifted in the 
-	 * direction of the positive Y axis as a factor of their X coordinate
-	 * @param interpolationType  
-	 */
-	public AffineShearTransform(final double shearx, final double sheary, final int interpolationType) {
-		this.shearx = shearx;
-		this.sheary = sheary;
-		this.interpolationType = interpolationType;
-	}
+    /**
+     * 
+     * @param shearx the multiplier by which coordinates are shifted in the 
+     * direction of the positive X axis as a factor of their Y coordinate
+     * @param sheary the multiplier by which coordinates are shifted in the 
+     * direction of the positive Y axis as a factor of their X coordinate
+     * @param interpolationType  
+     */
+    public AffineShearTransform(final double shearx, final double sheary, final int interpolationType) {
+        this.shearx = shearx;
+        this.sheary = sheary;
+        this.interpolationType = interpolationType;
+    }
 
-	public AffineShearTransform(final double shearx, final double sheary) {
-		this(shearx, sheary, AffineTransformOp.TYPE_BILINEAR);
-	}
+    public AffineShearTransform(final double shearx, final double sheary) {
+        this(shearx, sheary, AffineTransformOp.TYPE_BILINEAR);
+    }
 
-	@Override
-	public BufferedImage transform(final BufferedImage inputimage) {
-		return affineTransform(inputimage, AffineTransform.getShearInstance(shearx, sheary), interpolationType);
-	}
+    @Override
+    public BufferedImage transform(final BufferedImage inputimage) {
+        return affineTransform(inputimage, AffineTransform.getShearInstance(shearx, sheary), interpolationType);
+    }
 }

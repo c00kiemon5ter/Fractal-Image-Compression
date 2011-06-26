@@ -41,7 +41,6 @@ public class FractalReader {
      * 
      * @see FractalModel
      */
-    @SuppressWarnings (value="unchecked")
     public FractalModel read() throws ClassNotFoundException, IOException {
         return (FractalModel) this.in.readObject();
     }

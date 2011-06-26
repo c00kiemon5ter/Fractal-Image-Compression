@@ -9,22 +9,22 @@ import java.awt.image.BufferedImage;
  */
 public class AffineFlopTransfrom extends ImageTransform {
 
-	private int interpolationType;
+    private int interpolationType;
 
-	public AffineFlopTransfrom(final int interpolationType) {
-		this.interpolationType = interpolationType;
-	}
+    public AffineFlopTransfrom(final int interpolationType) {
+        this.interpolationType = interpolationType;
+    }
 
-	public AffineFlopTransfrom() {
-		this(AffineTransformOp.TYPE_BILINEAR);
-	}
+    public AffineFlopTransfrom() {
+        this(AffineTransformOp.TYPE_BILINEAR);
+    }
 
-	@Override
-	public BufferedImage transform(final BufferedImage inputimage) {
-		AffineTransform transform = new AffineTransform();
-		transform.translate(inputimage.getWidth() / 2, inputimage.getHeight() / 2);
-		transform.scale(-1, 1);
-		transform.translate(-inputimage.getWidth() / 2, -inputimage.getHeight() / 2);
-		return affineTransform(inputimage, transform, interpolationType);
-	}
+    @Override
+    public BufferedImage transform(final BufferedImage inputimage) {
+        AffineTransform transform = new AffineTransform();
+        transform.translate(inputimage.getWidth()  / 2, inputimage.getHeight()  / 2);
+        transform.scale(-1, 1);
+        transform.translate(-inputimage.getWidth() / 2, -inputimage.getHeight() / 2);
+        return affineTransform(inputimage, transform, interpolationType);
+    }
 }
