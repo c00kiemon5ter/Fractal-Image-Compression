@@ -30,11 +30,11 @@ import lib.utils.Utils;
  */
 public class Compressor extends Observable {
 
-    private ScaleTransform              scaleTransform;
-    private Tiler<BufferedImage>        tiler;
-    private Distanceator<BufferedImage> comparator;
-    private Set<ImageTransform>         transforms;
-    private Set<BufferedImageOp>        filters;
+    private final ScaleTransform              scaleTransform;
+    private final Tiler<BufferedImage>        tiler;
+    private final Distanceator<BufferedImage> comparator;
+    private final Set<ImageTransform>         transforms;
+    private final Set<BufferedImageOp>        filters;
 
     /**
      * @param scaleTransform the scale difference between the ranges and the domains
@@ -86,19 +86,6 @@ public class Compressor extends Observable {
         this.filters    = filters;
         this.transforms = transforms;
         this.scaleTransform = scaleTransform;
-
-        /*
-         * The 'None' transform -- makes no change to the given image.
-         * This is useful to traverse the transforms without special casing
-         * the comparison with the normal(non-transformed) image.
-         */
-        this.transforms.add(new ImageTransform() {
-
-            @Override
-            public BufferedImage transform(BufferedImage inputimage) {
-                return inputimage;
-            }
-        });
 
         if (observer != null) {
             this.addObserver(observer);

@@ -15,6 +15,7 @@ import lib.transformations.AffineRotateQuadrantsTransform;
 import lib.transformations.FlipTransform;
 import lib.transformations.FlopTransform;
 import lib.transformations.ImageTransform;
+import lib.transformations.NoneTransform;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -142,6 +143,7 @@ public class Fic implements Observer, Runnable {
                 configuration.tiler(),
                 new ImageComparator(configuration.metric(), configuration.fuzz()),
                 new HashSet<ImageTransform>(5) {{
+                    add(new NoneTransform());
                     add(new FlipTransform());
                     add(new FlopTransform());
                     add(new AffineRotateQuadrantsTransform(1));
