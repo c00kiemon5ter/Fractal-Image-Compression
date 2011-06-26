@@ -1,5 +1,6 @@
 package lib;
 
+import java.awt.Point;
 import lib.comparators.Distanceator;
 
 import lib.tilers.Tiler;
@@ -7,9 +8,6 @@ import lib.tilers.Tiler;
 import lib.transformations.ImageTransform;
 import lib.transformations.ScaleTransform;
 
-import lib.utils.Utils;
-
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 
@@ -22,6 +20,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import lib.core.FractalModel;
+import lib.utils.Utils;
 
 /**
  * fractal compressor instance. combines the tiler and
@@ -166,7 +165,7 @@ public class Compressor extends Observable {
          */
         Map<Point, Map.Entry<BufferedImage, ImageTransform>> simplemodel =
             new HashMap<Point, Map.Entry<BufferedImage, ImageTransform>>(rangessize);
-        int width = image.getWidth();
+        int width = image.getWidth() / rangeblocks.get(0).getWidth();
 
         /*
          * After the end of each domain loop, or in other words, before
@@ -183,10 +182,10 @@ public class Compressor extends Observable {
          * domainblock and transformation.
          */
         for (int rangeidx = 0; rangeidx < rangessize; rangeidx++) {
-            final Point rangepoint = Utils.indexToPoint(rangeidx, width);
+            Point  point   = Utils.indexToPoint(rangeidx, width);
             double mindiff = Double.MAX_VALUE;
 
-            for (final BufferedImage domainblock : domainblocks.keySet()) {
+            for (BufferedImage domainblock : domainblocks.keySet()) {
                 double diff = comparator.distance(rangeblocks.get(rangeidx), domainblock);
 
                 /*
@@ -198,8 +197,8 @@ public class Compressor extends Observable {
                  * than the best (minimum) so far), we update the best
                  * difference and map the range to the new domain image.
                  */
-                if (!simplemodel.containsKey(rangepoint) || (mindiff > diff)) {
-                    simplemodel.put(rangepoint, domainblocks.get(domainblock));
+                if (!simplemodel.containsKey(point) || (mindiff > diff)) {
+                    simplemodel.put(point, domainblocks.get(domainblock));
                     mindiff = diff;
                 }
             }

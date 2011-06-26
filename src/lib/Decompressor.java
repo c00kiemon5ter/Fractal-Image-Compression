@@ -3,11 +3,15 @@ package lib;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+
 import lib.core.FractalModel;
+import lib.core.ImageHolder;
+
 import lib.transformations.ImageTransform;
 
 /**
@@ -22,29 +26,52 @@ public class Decompressor extends Observable {
         this.addObserver(observer);
     }
 
+    /**
+     * reconstruct the original range image from the given fractal model
+     * 
+     * @param fmodel the fractal model describing the image
+     * @return the original image
+     * 
+     * @see Compressor#compress(java.awt.image.BufferedImage) 
+     * @see FractalModel
+     */
     public BufferedImage decompress(FractalModel fmodel) {
         Map<Point, BufferedImage> simplemodel = new HashMap<Point, BufferedImage>();
-        int maxwidth = 0, maxheight = 0, ranges = 0;
 
-        for (BufferedImage domain : fmodel.getModel().keySet()) {
+        int blockwidth  = fmodel.getModel().keySet().iterator().next().getImage().getWidth();
+        int blockheight = fmodel.getModel().keySet().iterator().next().getImage().getHeight();
+        int maxwidth    = 0;
+        int maxheight   = 0;
+
+        for (ImageHolder domain : fmodel.getModel().keySet()) {
             for (ImageTransform transform : fmodel.getModel().get(domain).keySet()) {
-                for (Point rangepoint : fmodel.getModel().get(domain).get(transform)) {
-                    simplemodel.put(rangepoint, transform.transform(domain));
-                    maxwidth  = maxwidth  < rangepoint.x ? rangepoint.x : maxwidth;
-                    maxheight = maxheight < rangepoint.y ? rangepoint.y : maxheight;
+                for (Point point : fmodel.getModel().get(domain).get(transform)) {
+                    simplemodel.put(point, transform.transform(domain.getImage()));
+
+                    if (maxwidth < point.x) {
+                        maxwidth = point.x;
+                    }
+
+                    if (maxheight < point.y) {
+                        maxheight = point.y;
+                    }
                 }
             }
         }
 
-        BufferedImage image = new BufferedImage(maxwidth, maxheight, BufferedImage.TYPE_INT_RGB);
+        int imgwidth  = ++maxwidth  * blockwidth;
+        int imgheight = ++maxheight * blockheight;
+
+        BufferedImage image = new BufferedImage(imgwidth, imgheight, BufferedImage.TYPE_INT_RGB);
         Graphics graphics   = image.getGraphics();
 
+        int ranges = 0;
         for (Point point : simplemodel.keySet()) {
             BufferedImage range = simplemodel.get(point);
-            graphics.drawImage(range, point.x * range.getWidth(), point.y * range.getHeight(), null);
+            graphics.drawImage(range, point.x * blockwidth, point.y * blockheight, null);
 
             this.setChanged();
-            this.notifyObservers(new int[]{++ranges, simplemodel.size()});
+            this.notifyObservers(new int[]{ranges++, simplemodel.size()});
         }
         graphics.dispose();
 

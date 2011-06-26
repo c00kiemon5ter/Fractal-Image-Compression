@@ -1,15 +1,20 @@
 package lib.core;
 
-import java.util.Map.Entry;
+
 import lib.transformations.ImageTransform;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
+import java.io.Serializable;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import lib.Compressor;
 
 /**
  * a fractal model represents the compressed form of the image.<br />
@@ -40,16 +45,12 @@ import java.util.Set;
  * 
  * @see Compressor
  */
-public class FractalModel {
+public class FractalModel implements Serializable {
 
-    Map<BufferedImage, Map<ImageTransform, Set<Point>>> model;
-
-    public FractalModel() {
-        this.model = new HashMap<BufferedImage, Map<ImageTransform, Set<Point>>>();
-    }
+    private Map<ImageHolder, Map<ImageTransform, Set<Point>>> model;
 
     public FractalModel(Map<Point, Map.Entry<BufferedImage, ImageTransform>> simplemodel) {
-        model = new HashMap<BufferedImage, Map<ImageTransform, Set<Point>>>();
+        model = new HashMap<ImageHolder, Map<ImageTransform, Set<Point>>>();
 
         analyze(simplemodel);
     }
@@ -59,8 +60,8 @@ public class FractalModel {
         /*
          * for each point, extract the appropriate domain and transform
          */
-        for (final Point point : simplemodel.keySet()) {
-            BufferedImage  domain    = simplemodel.get(point).getKey();
+        for (Point point : simplemodel.keySet()) {
+            ImageHolder    domain    = new ImageHolder(simplemodel.get(point).getKey());
             ImageTransform transform = simplemodel.get(point).getValue();
 
             /*
@@ -84,13 +85,7 @@ public class FractalModel {
         }
     }
 
-    public boolean add(Map.Entry<BufferedImage, Map<ImageTransform, Set<Point>>> entry) {
-        model.put(entry.getKey(), entry.getValue());
-
-        return false;
-    }
-
-    public Map<BufferedImage, Map<ImageTransform, Set<Point>>> getModel() {
+    public Map<ImageHolder, Map<ImageTransform, Set<Point>>> getModel() {
         return model;
     }
 }
