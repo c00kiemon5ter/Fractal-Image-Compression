@@ -4,7 +4,8 @@ import app.configuration.converters.MetricConverter;
 import app.configuration.converters.PixelTilerConverter;
 import app.configuration.converters.ScaleTransformConverter;
 import app.configuration.validators.MetricValidator;
-import app.configuration.validators.PositiveNumberValidator;
+import app.configuration.validators.ScalerValidator;
+import app.configuration.validators.TilerValidator;
 
 import com.beust.jcommander.Parameter;
 
@@ -41,12 +42,12 @@ public class Options {
     @Parameter(names        = { "-s", "--scale" },
                description  = "the width and height scale factors for the domain image",
                converter    = ScaleTransformConverter.class,
-               validateWith = PositiveNumberValidator.class)
+               validateWith = ScalerValidator.class)
     protected ScaleTransform domainScale  = new ScaleTransform(.5, .5);
 
     @Parameter(names        = { "-t", "--tile" },
                description  = "the width and height in pixels to tile the image",
                converter    = PixelTilerConverter.class,
-               validateWith = PositiveNumberValidator.class)
+               validateWith = TilerValidator.class)
     protected RectangularPixelTiler tiler = new RectangularPixelTiler(8, 8);
 }
