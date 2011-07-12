@@ -57,3 +57,15 @@ and forms back the original image.
 
 Typical timings for compression is about 3min and less than a second for decompression.
 
+---
+
+Results
+=======
+Input image (top, colored) and results (bottom)
+for tiles of `8px`, `4px` and `2px` respectively
+  ![lena](../images/lena.jpg)
+
+  ![8px tile](../images/8px.jpg)
+  ![4px tile](../images/4px.jpg)
+  ![2px tile](../images/2px.jpg)
+
