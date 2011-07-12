@@ -16,12 +16,15 @@ the fact that parts of an image often resemble other parts of the same image.
 &raquo; Source
 --------------
 The [code repository][repo] is hosted on [GitHub][gh].
+
 The source for the library can be found under [`/src/lib/`][lib]
 while the app lives under [`/src/app/`][app].
+
+For the documentation refer to the [javadoc][jd].
 
   [repo]: https://github.com/c00kiemon5ter/Fractal-Image-Compression
   [gh]: https://github.com/
   [lib]: https://github.com/c00kiemon5ter/Fractal-Image-Compression/tree/master/src/app
   [app]: https://github.com/c00kiemon5ter/Fractal-Image-Compression/tree/master/src/lib
-
+  [jd]: javadoc/index.html
 
