@@ -1,10 +1,11 @@
 Project Description
 ===================
 
-The project's goal, is to provide a reusable library for fractal compression of
-images. Along with the library, comes a small application, indicating the
-library's usage and serving as an example and proof of concept of the ideas
-behind fractal compression.
+The project's goal, is to provide a reusable, free and open source library
+for fractal compression of images.
+Along with the library, comes a small application, indicating the library's
+usage and serving as an example and proof of concept of the ideas behind
+fractal compression.
 
 &raquo; What is it ?
 ---------------------
